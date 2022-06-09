@@ -1,0 +1,23 @@
+{
+  "country_with_most_genomes": "Portugal",
+  "date": "2022-06-10",
+  "diff_countries": [
+    "India"
+  ],
+  "file": "https://raw.githubusercontent.com/globaldothealth/monkeypox/main/archives/2022-06-09%2021%3A02%3A19.196351.csv",
+  "last_week_file": "https://raw.githubusercontent.com/globaldothealth/monkeypox/main/archives/2022-06-03%2021%3A02%3A36.257082.csv",
+  "mean_age_confirmed_cases": 38,
+  "n_confirmed": 1313,
+  "n_confirmed_or_suspected": 1398,
+  "n_countries": 54,
+  "n_diff_confirmed": 85,
+  "n_diff_countries": 1,
+  "n_genomes": 121,
+  "n_suspected": 85,
+  "n_travel_history": 92,
+  "percentage_male": 97,
+  "previous_day_file": "https://raw.githubusercontent.com/globaldothealth/monkeypox/main/archives/2022-06-08%2021%3A02%3A16.959068.csv",
+  "table_confirmed_cases": "<table border=\"1\" class=\"dataframe\">\n  <thead>\n    <tr style=\"text-align: right;\">\n      <th></th>\n      <th>Confirmed</th>\n      <th>% diff last week</th>\n    </tr>\n    <tr>\n      <th>Country</th>\n      <th></th>\n      <th></th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>England</th>\n      <td>305</td>\n      <td>42</td>\n    </tr>\n    <tr>\n      <th>Spain</th>\n      <td>259</td>\n      <td>37</td>\n    </tr>\n    <tr>\n      <th>Portugal</th>\n      <td>191</td>\n      <td>33</td>\n    </tr>\n    <tr>\n      <th>Germany</th>\n      <td>150</td>\n      <td>127</td>\n    </tr>\n    <tr>\n      <th>Canada</th>\n      <td>102</td>\n      <td>67</td>\n    </tr>\n    <tr>\n      <th>France</th>\n      <td>66</td>\n      <td>29</td>\n    </tr>\n    <tr>\n      <th>Netherlands</th>\n      <td>54</td>\n      <td>35</td>\n    </tr>\n    <tr>\n      <th>United States</th>\n      <td>40</td>\n      <td>73</td>\n    </tr>\n    <tr>\n      <th>Italy</th>\n      <td>26</td>\n      <td>18</td>\n    </tr>\n    <tr>\n      <th>Belgium</th>\n      <td>24</td>\n      <td>41</td>\n    </tr>\n    <tr>\n      <th>United Arab Emirates</th>\n      <td>13</td>\n      <td>62</td>\n    </tr>\n    <tr>\n      <th>Switzerland</th>\n      <td>12</td>\n      <td>50</td>\n    </tr>\n    <tr>\n      <th>Scotland</th>\n      <td>11</td>\n      <td>37</td>\n    </tr>\n    <tr>\n      <th>Ireland</th>\n      <td>7</td>\n      <td>16</td>\n    </tr>\n    <tr>\n      <th>Czech Republic</th>\n      <td>6</td>\n      <td>0</td>\n    </tr>\n    <tr>\n      <th>Australia</th>\n      <td>6</td>\n      <td>20</td>\n    </tr>\n    <tr>\n      <th>Slovenia</th>\n      <td>6</td>\n      <td>100</td>\n    </tr>\n    <tr>\n      <th>Sweden</th>\n      <td>5</td>\n      <td>0</td>\n    </tr>\n    <tr>\n      <th>Israel</th>\n      <td>3</td>\n      <td>50</td>\n    </tr>\n    <tr>\n      <th>Wales</th>\n      <td>3</td>\n      <td>50</td>\n    </tr>\n    <tr>\n      <th>Norway</th>\n      <td>2</td>\n      <td>0</td>\n    </tr>\n    <tr>\n      <th>Argentina</th>\n      <td>2</td>\n      <td>0</td>\n    </tr>\n    <tr>\n      <th>Northern Ireland</th>\n      <td>2</td>\n      <td>0</td>\n    </tr>\n    <tr>\n      <th>Finland</th>\n      <td>2</td>\n      <td>0</td>\n    </tr>\n    <tr>\n      <th>Denmark</th>\n      <td>2</td>\n      <td>0</td>\n    </tr>\n    <tr>\n      <th>Morocco</th>\n      <td>1</td>\n      <td>0</td>\n    </tr>\n    <tr>\n      <th>Mexico</th>\n      <td>1</td>\n      <td>0</td>\n    </tr>\n    <tr>\n      <th>Latvia</th>\n      <td>1</td>\n      <td>0</td>\n    </tr>\n    <tr>\n      <th>Hungary</th>\n      <td>1</td>\n      <td>0</td>\n    </tr>\n    <tr>\n      <th>United Kingdom</th>\n      <td>1</td>\n      <td>0</td>\n    </tr>\n    <tr>\n      <th>Austria</th>\n      <td>1</td>\n      <td>0</td>\n    </tr>\n    <tr>\n      <th>Malta</th>\n      <td>1</td>\n      <td>0</td>\n    </tr>\n  </tbody>\n</table>",
+  "text_diff_countries": ", and 1 new country has been added to the list (India)",
+  "yesterday": "2022-06-09"
+}
