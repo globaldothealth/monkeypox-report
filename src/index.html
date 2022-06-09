@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Monkeypox 2022 global epidemiology; Report {{ date }}</title>
+    <meta name="description" content="Monkeypox 2022 outbreak briefing report from Global.health">
+ 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+ 	<link rel="stylesheet" href="style.css">
+  </head>
+<body>
+<main>
+<nav>
+    <img class="logo" src="https://global.health/wp-content/uploads/2020/07/gh-logo-full-black.png" alt="Global.health logo"></li>
+    <ul>
+        <li><a href="https://github.com/globaldothealth/monkeypox">GitHub</a></li>
+        <li><a href="https://map.monkeypox.global.health">Map</a></li>
+    </ul>
+</nav>
+<h1>Monkeypox 2022 global epidemiology; Report {{ date }}</h1>
+<p>From the <a href="https://global.health">Global.health</a> team (<a href="mailto:info@global.health">info@global.health</a>)</p>
+
+<h2>Summary</h2>
+
+<p> The Monkeypox 2022 outbreak has to date been detected in {{ n_countries }}
+countries and caused at least {{ n_confirmed }} confirmed and {{ n_suspected }}
+suspected cases (as of
+{{ date }}; <strong>Figure 1A</strong>). Since {{ yesterday }}, {{ n_diff_confirmed }}
+new confirmed cases have
+been reported{{ text_diff_countries }} (<strong>Figure 1B</strong>).</p>
+
+<p class="print">Turn over for figure →</p>
+
+<figure class="mainfigure">
+    <img src="figures/travel-history.png" alt="graph: Travel history and confirmed cases">
+<figcaption>
+<strong>Figure 1</strong>: <strong>A</strong>) Number of confirmed cases since
+May 7 2022 per country. Lines show reported travel history between countries
+and colour indicates the date of travel. <strong>B</strong>) Number of
+cumulative confirmed cases and number of countries who have reported confirmed
+cases. <a href="figures/travel-history.png">Link to figure</a>
+</figcaption>
+</figure>
+
+{{{ table_confirmed_cases }}}
+
+<p><strong>Table 1</strong>: Number of confirmed cases by country (highest
+    to lowest) and percentage change since last week.</p>
+
+<p>Of the {{ n_confirmed }} number of confirmed cases, {{ n_travel_history
+    }} reported travel history. For {{ n_unknown_travel_history }} cases, travel
+    history location was unknown.</p>
+
+<p> The mean delay between confirmation and entry of suspected
+    case was {{ mean_delay_suspected_confirmed }} days
+    (median {{ median_delay_suspected_confirmed }} days) and varied by country
+    (n = {{ n_suspected_confirmed }} total number of
+    cases where the dates of suspected and confirmed was known; <strong>Figure 2</strong>).
+    Most countries do not report suspected cases.</p>
+  
+<figure>
+    <img src="figures/delay-to-confirmation.png" alt="graph: Delay to confirmation by country">
+<figcaption>
+<strong>Figure 2</strong>: Delay to confirmation by country.
+<a href="figures/delay-to-confirmation.png">Link to figure</a>
+</figcaption>
+</figure>
+
+
+<p>Genomic data is being reported via multiple open source repositories.
+    The (combined) number of genomic sequences of the current outbreak is
+    {{ n_genomes }}. The country with the highest number of genomic
+    sequences reported is {{ country_with_most_genomes }}. A comparison
+    between the number of genomes and number of confirmed cases is below
+(<strong>Figure 3</strong>).</p>
+   
+<figure>
+    <img style="width: 75%" src="figures/genomics.png" alt="graph: Number of sequences from Nextstrain and confirmed cases">
+<figcaption>
+<strong>Figure 3</strong>: Number of sequences (downloaded via Nextstrain) and confirmed cases.
+<a href="figures/genomics.png">Link to figure</a>
+</figcaption>
+</figure>
+
+<p> The age and gender ratio is shown in <strong>Figure 4</strong>. {{
+    percentage_male }} percent of cases (for which there was an entry for
+    gender) are described as male. The mean age of confirmed cases is {{
+    mean_age_confirmed_cases }}.
+
+<figure>
+    <img style="width: 85%" src="figures/age-gender.png" alt="graph: Age and gender distribution">
+<figcaption>
+<strong>Figure 4</strong>: Age and gender distribution of
+monkeypox confirmed cases in 2022.
+<a href="figures/age-gender.png">Link to figure</a>
+</figcaption>
+</figure>
+
+<p><strong>Data accessibility and reproducibility</strong>: All data used in this report are
+    available from: <a
+        href="https://github.com/globaldothealth/monkeypox">https://github.com/globaldothealth/monkeypox</a>.
+    Should you identify any issues or have questions please raise an issue
+    on GitHub or write to us: <a
+        href="mailto:info@global.health">info@global.health</a>. Latest
+    data can be downloaded from here: <a
+        href="https://github.com/globaldothealth/monkeypox/blob/main/latest.csv">https://github.com/globaldothealth/monkeypox/blob/main/latest.csv</a>
+
+<p>Please see a description of the data curation process here: <a
+    href="https://www.thelancet.com/journals/laninf/article/PIIS1473-3099(22)00359-0/fulltext">
+        https://www.thelancet.com/journals/laninf/article/PIIS1473-3099(22)00359-0/fulltext</a>
+
+</main>
+</body>
+</html>

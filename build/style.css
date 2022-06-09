@@ -1,0 +1,59 @@
+body, p, h1, h2 {
+  font-family: Inter, sans-serif;
+}
+nav ul {
+    float: right
+}
+nav ul li {
+  display: inline;
+  vertical-align: top;
+  padding: 10px;
+}
+
+nav ul a {
+  color: #444;
+  padding: 10px;
+  text-decoration: underline;
+}
+nav ul a:hover {
+  background-color: #e0e0e0;
+}
+
+figure img {
+  display: block;
+  margin: auto;
+}
+
+img.logo {
+  height: 100px
+}
+
+@media (prefers-color-scheme: dark) {
+  nav ul a {
+    color: #f0f0f0;
+  }
+  figure img, img.logo {
+    filter: invert(100%);
+  }
+  nav ul a:hover {
+    background-color: #444444;
+  }
+}
+
+p.print {
+  display: none;
+}
+
+@media print {
+  figure.mainfigure {
+      page-break-before: always;
+  }
+  p.print {
+      display: block;
+      color: #111;
+  }
+  nav ul {
+      display: none;
+  }
+
+}
