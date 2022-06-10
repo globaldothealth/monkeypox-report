@@ -171,6 +171,12 @@ def mid_bucket_age(age_interval: str) -> float:
         return None
 
 
+def mean_delay_suspected_confirmed(df: pd.DataFrame) -> dict[str, str]:
+    """Returns mean delay of status change from suspected to confirmed"""
+
+    entry_before_confirmation = df[df.Date_entry < df.Date_confirmation]
+
+
 def demographics(df: pd.DataFrame) -> dict[str, int]:
     df["Age_mid"] = df.Age.map(mid_bucket_age)
     valid_age_df = df[~pd.isnull(df.Age_mid)]
