@@ -2,7 +2,9 @@ import os
 import sys
 import json
 import logging
+import argparse
 import datetime
+import subprocess
 from typing import Final, Any
 from pathlib import Path
 
@@ -23,20 +25,29 @@ oneday: Final = datetime.timedelta(days=1)
 week: Final = datetime.timedelta(days=7)
 
 DATA_REPO: Final = "globaldothealth/monkeypox"
-NEXTSTRAIN_PATH: Final = "nextstrain_monkeypox_metadata.tsv"
-NEXTSTRAIN_FILE: Final[Path] = NEXTSTRAIN_PATH.split("/")[-1]
+NEXTSTRAIN_FILE: Final = "nextstrain_monkeypox_metadata.tsv"
 DIFFERENCE_LAST_WEEK_COLUMN: Final = "% difference in cases compared to last week"
+
+FIGURES: Final = [
+    "travel-history",
+    "delay-to-confirmation",
+    "genomics",
+    "age-gender",
+]
 
 if not (DATA_PATH := Path(__file__).parent / "data").exists():
     DATA_PATH.mkdir()
 BUILD_PATH = Path(__file__).parent.parent / "build"
 
 
-def fetch_nextstrain():
-    if not (S3_BUCKET := os.getenv("MONKEYPOX_S3_BUCKET")):
-        raise ValueError("Specify MONKEYPOX_S3_BUCKET")
+def fetch_nextstrain(bucket: str, date: datetime.date):
     s3 = boto3.client("s3")
-    s3.download_file(S3_BUCKET, NEXTSTRAIN_PATH, str(DATA_PATH / NEXTSTRAIN_FILE))
+    s3.download_file(
+        bucket, f"{date}/{NEXTSTRAIN_FILE}", str(DATA_PATH / NEXTSTRAIN_FILE)
+    )
+
+
+def read_nextstrain():
     df = pd.read_csv(DATA_PATH / NEXTSTRAIN_FILE, sep="\t")
     n_genomes = len(df)
     highest_genomes = (
@@ -214,17 +225,27 @@ def render(template: Path, variables: dict[str, Any], output: Path):
         output.write_text(chevron.render(f, variables))
 
 
-if __name__ == "__main__":
+def build(
+    fetch_bucket: str,
+    date: datetime.date,
+    skip_fetch: bool = False,
+    skip_figures: bool = False,
+):
+    """Build Monkeypox epidemiological report for a particular date"""
     var = {}
-    logging.info("Fetch nextstrain data from S3")
-    var.update(fetch_nextstrain())
-    logging.info("Fetch yesterday, day before yesterday, and last week's files")
+    date = date or today
+    if not skip_fetch:
+        logging.info("Fetch nextstrain data from S3")
+        fetch_nextstrain(fetch_bucket, date)
+    var.update(read_nextstrain())
     var.update({"date": today.isoformat(), "yesterday": (today - oneday).isoformat()})
     var.update(input_files(get_archives_list("csv")))
-    fetch_urls(
-        [var["file"], var["previous_day_file"], var["last_week_file"]],
-        ["yesterday.csv", "day_before_yesterday.csv", "last_week.csv"],
-    )
+    if not skip_fetch:
+        logging.info("Fetch yesterday, day before yesterday, and last week's files")
+        fetch_urls(
+            [var["file"], var["previous_day_file"], var["last_week_file"]],
+            ["yesterday.csv", "day_before_yesterday.csv", "last_week.csv"],
+        )
     genomics.aggregate(DATA_PATH / "yesterday.csv", DATA_PATH / NEXTSTRAIN_FILE).to_csv(
         DATA_PATH / "genomics.csv",
         header=True,
@@ -247,3 +268,28 @@ if __name__ == "__main__":
         json.dump(var, fp, indent=2, sort_keys=True)
     logging.info("Rendering index.html")
     render(Path(__file__).parent / "index.html", var, BUILD_PATH / "index.html")
+
+    if not skip_figures:
+        for figure in FIGURES:
+            subprocess.run(["Rscript", f"src/figures/{figure}.r"])
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Build Monkeypox epidemiology report")
+    parser.add_argument("bucket", help="S3 bucket to fetch genomics data from")
+    parser.add_argument("--date", help="Build report for date instead of today")
+    parser.add_argument(
+        "--skip-fetch", help="Skip data fetch and use cached files", action="store_true"
+    )
+    parser.add_argument(
+        "--skip-figures", help="Skip figure generation", action="store_true"
+    )
+    args = parser.parse_args()
+    build(
+        args.bucket,
+        date=datetime.datetime.fromisoformat(args.date).date()
+        if args.date
+        else datetime.datetime.today().date(),
+        skip_fetch=args.skip_fetch,
+        skip_figures=args.skip_figures,
+    )
