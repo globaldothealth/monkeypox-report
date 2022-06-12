@@ -49,18 +49,14 @@ def fetch_nextstrain(bucket: str, date: datetime.date):
 
 def read_nextstrain():
     df = pd.read_csv(DATA_PATH / NEXTSTRAIN_FILE, sep="\t")
-    n_genomes = len(df)
-    highest_genomes = (
-        df.groupby("country")
-        .count()
-        .sort_values("strain", ascending=False)
-        .head(n=1)
-        .to_dict()
-    )
-    country_with_most_genomes = list(highest_genomes["strain"].keys())[0]
+    df = df[(df.host == "Homo sapiens") & (df.outbreak_associated == "yes")]
     return {
-        "n_genomes": n_genomes,
-        "country_with_most_genomes": country_with_most_genomes,
+        "n_genomes": len(df),
+        "country_with_most_genomes": df.groupby("country")
+        .size()
+        .sort_values(ascending=False)
+        .head(n=1)
+        .axes[0][0],
     }
 
 
