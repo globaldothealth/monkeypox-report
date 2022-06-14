@@ -1,0 +1,31 @@
+name: deploy
+
+on:
+  push:
+    branches: [mais]
+    paths:
+    - 'build/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-central-1
+
+    - name: Copy files to S3
+      run: |
+        aws s3 sync build/ s3://www.monkeypox.global.health/$(date +'%Y-%m-%d')/
+        aws s3 sync build/ s3://www.monkeypox.global.health/
+
+    - name: Invalidate cache
+      run: |
+        aws cloudfront create-invalidation \
+          --distribution-id EG7WS3LXZ4NO \
+          --paths / /index.html /index.json /style.css /figures/
