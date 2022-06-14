@@ -25,7 +25,7 @@ oneday: Final = datetime.timedelta(days=1)
 week: Final = datetime.timedelta(days=7)
 
 DATA_REPO: Final = "globaldothealth/monkeypox"
-NEXTSTRAIN_FILE: Final = "nextstrain_monkeypox_metadata.tsv"
+NEXTSTRAIN_FILE: Final = "nextstrain_monkeypox_hmpxv1_metadata.tsv"
 DIFFERENCE_LAST_WEEK_COLUMN: Final = "% difference in cases compared to last week"
 
 FIGURES: Final = [
