@@ -2,7 +2,7 @@ name: deploy
 
 on:
   push:
-    branches: [mais]
+    branches: [main]
     paths:
     - 'build/**'
   workflow_dispatch:
