@@ -3,7 +3,7 @@ library(ggpubr)
 agg_df <- read.csv("src/data/genomics.csv")
 
 fig1 <- ggscatter(agg_df, x = "nextstrain_genome_count", y = "Gh_confirmed_cases", 
-                  color="#3182BD",
+                  color="#007AEC",
                   add = "reg.line", conf.int = TRUE, 
                   #cor.coef = TRUE, cor.method = "pearson",
                   xlab = "Number of MPXV genomes", ylab = "Number of Confirmed Cases",
