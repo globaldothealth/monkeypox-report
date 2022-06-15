@@ -28,4 +28,4 @@ jobs:
       run: |
         aws cloudfront create-invalidation \
           --distribution-id EG7WS3LXZ4NO \
-          --paths / /index.html /index.json /style.css /figures/
+          --paths / /index.html /index.json /style.css '/figures/*'
