@@ -21,6 +21,16 @@ gh_data_delay <- gh_data %>%
 group_counts <- gh_data_delay %>%
   group_by(confirmation_delay) %>%
   summarise(n = n())
+
+# calculate the total number of rows for each country
+country_totals <- gh_data_delay %>%
+  group_by(Country) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
+
+# setting the order of countries will allow the most represented to be colored w/ G.h colors
+gh_data_delay$Country <- factor(gh_data_delay$Country, levels=country_totals$Country)
+
 # use the max count to inform the position of figure insets
 hist_max <- max(group_counts$n)
 # median and mean confirmation delay
@@ -31,10 +41,12 @@ mean <- mean(gh_data_delay$confirmation_delay)
 n <- length(unique(gh_data_delay$Country))
 qual_col_pals = brewer.pal.info[brewer.pal.info$category == 'qual',]
 col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
+# include G.h colors in the palette
+full_col_vector <- unique(c(c("#007AEC", "#6BADEA", "#00C6AF", "#0E7569","#FD685B", "#FD9986"), col_vector))
 
 delay_fig <- ggplot(gh_data_delay) +
   geom_histogram(aes(confirmation_delay, fill=Country), color='black') +
-  scale_fill_manual(values = col_vector) +
+  scale_fill_manual(values = full_col_vector) +
   geom_vline(xintercept=med, linetype="dashed", color="black") +
   geom_vline(xintercept=mean, linetype="dashed", color="grey50") +
   annotate("text", x=med, y=hist_max+10, label=paste("Median Delay:", med), color="black", hjust = -0.11) +
