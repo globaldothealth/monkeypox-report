@@ -71,7 +71,7 @@ pop_pyramid <- ggplot(data = final_bins,
     geom_col(show.legend=FALSE, color='black', size=0.05) +
     labs(x = "Number of Cases", y="Age", title="Male           Female") +
     theme_classic() +
-    scale_fill_manual(values=c("#225893", "#accde4")) +
+    scale_fill_manual(values=c("#007AEC", "#6BADEA")) +
     theme(plot.title = element_text(hjust = 0.5))
 
 png('build/figures/age-gender.png',
