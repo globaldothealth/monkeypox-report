@@ -39,7 +39,8 @@ def upload(file: Path):
     if file is None:
         logging.error("Nextstrain file not downloaded")
         return None
-    BUCKET = os.getenv("MONKEYPOX_BUCKET")
+    if not (BUCKET := os.getenv("MONKEYPOX_BUCKET")):
+        raise ValueError("Specify bucket to copy files to in MONKEYPOX_BUCKET")
     s3 = boto3.resource("s3")
     today = datetime.today().date()
     try:
