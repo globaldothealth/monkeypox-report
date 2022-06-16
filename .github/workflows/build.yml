@@ -1,0 +1,47 @@
+name: build
+
+on:
+  schedule:
+    - cron: '6 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v3
+      with:
+        python-version: '3.10'
+    - uses: r-lib/actions/setup-r@v2
+      with:
+        r-version: '4.2.0'
+    - uses: r-lib/actions/setup-renv@v2
+    - name: Install poetry
+      run: curl -sSL https://install.python-poetry.org | python3 -
+    - name: Install dependencies
+      run: poetry install
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-central-1
+
+    - name: Switch to report branch
+      run: git checkout -b report-$(date +'%Y%m%d')
+
+    - name: Build
+      run: poetry run python src/build.py ${{ secrets.MONKEYPOX_BUCKET }}
+    - name: Commit files
+      run: |
+        git add build
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git commit -m "Report update $(date +'%Y-%m-%d')" || echo "Nothing changed since last run"
+        git push --set-upstream origin report-$(date +'%Y%m%d')
+    - name: Create pull request
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: gh pr create --title "Report update $(date +'%Y-%m-%d')" --body "Daily report update"
