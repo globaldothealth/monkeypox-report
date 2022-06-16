@@ -12,7 +12,9 @@ NEXTSTRAIN_MPXV = "https://nextstrain.org/monkeypox/hmpxv1"
 
 
 def fetch_metadata(link: str) -> Optional[Path]:
-    driver = webdriver.Firefox()
+    options = webdriver.FirefoxOptions()
+    options.headless = True
+    driver = webdriver.Firefox(options=options)
     driver.get(link)
 
     def find_button(text):
