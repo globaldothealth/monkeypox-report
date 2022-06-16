@@ -21,7 +21,8 @@
     </ul>
 </nav>
 <h1>Monkeypox 2022 global epidemiology; Report {{ date }}</h1>
-<p>From the <a href="https://global.health">Global.health</a> team (<a href="mailto:info@global.health">info@global.health</a>)</p>
+<p>From the <a href="https://global.health">Global.health</a> team (<a href="mailto:info@global.health">info@global.health</a>)
+    • <a href="/{{ date }}">Permalink</a></p>
 
 <h2>Summary</h2>
 
@@ -30,7 +31,7 @@
 countries (either confirmed or suspected cases), with
 {{ n_countries_confirmed }} confirming transmission,
 {{ n_countries_suspected_only }} countries continuing to have suspected cases only,
-and {{ n_countries_discarded }} countries discarded cases that were suspected.
+and {{ n_countries_discarded }} countries having discarded cases that were suspected.
 Overall there are {{ n_confirmed }} confirmed and {{ n_suspected }}
 suspected cases (as of
 {{ date }}; <strong>Figure 1A</strong>). Since {{ yesterday }}, {{ n_diff_confirmed }}
@@ -46,7 +47,7 @@ been reported{{ text_diff_countries }} (<strong>Figure 1B</strong>).</p>
 May 7 2022 per country. Lines show reported travel history between countries
 and colour indicates the date of travel. <strong>B</strong>) Number of
 cumulative confirmed cases and number of countries who have reported confirmed
-cases. <a href="figures/travel-history.png">Link to figure</a>
+cases. <a href="/{{ date }}/figures/travel-history.png">Link to figure</a>
 </figcaption>
 </figure>
 
@@ -70,7 +71,7 @@ cases. <a href="figures/travel-history.png">Link to figure</a>
     <img src="figures/delay-to-confirmation.png" alt="graph: Delay to confirmation by country">
 <figcaption>
 <strong>Figure 2</strong>: Delay to confirmation by country.
-<a href="figures/delay-to-confirmation.png">Link to figure</a>
+<a href="/{{ date }}/figures/delay-to-confirmation.png">Link to figure</a>
 </figcaption>
 </figure>
 
@@ -89,7 +90,7 @@ cases. <a href="figures/travel-history.png">Link to figure</a>
     <img style="width: 75%" src="figures/genomics.png" alt="graph: Number of sequences from Nextstrain and confirmed cases">
 <figcaption>
 <strong>Figure 3</strong>: Number of sequences (downloaded via Nextstrain) and confirmed cases.
-<a href="figures/genomics.png">Link to figure</a>
+<a href="/{{ date }}/figures/genomics.png">Link to figure</a>
 </figcaption>
 </figure>
 
@@ -103,7 +104,7 @@ cases. <a href="figures/travel-history.png">Link to figure</a>
 <figcaption>
 <strong>Figure 4</strong>: Age and gender distribution of
 monkeypox confirmed cases in 2022.
-<a href="figures/age-gender.png">Link to figure</a>
+<a href="/{{ date }}/figures/age-gender.png">Link to figure</a>
 </figcaption>
 </figure>
 
