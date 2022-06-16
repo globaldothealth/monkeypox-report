@@ -131,8 +131,19 @@ def counts(df: pd.DataFrame, prev_df: pd.DataFrame) -> dict[str, int]:
     df: Today's data file as a dataframe
     prev_df: Previous day's data file as a dataframe
     """
+    countries_suspected_or_confirmed = set(
+        df[df.Status.isin(["confirmed", "suspected"])].Country
+    )
+    countries_confirmed = set(df[df.Status == "confirmed"].Country)
+    countries_suspected = set(df[df.Status == "suspected"].Country)
+    countries_discarded = set(df[df.Status == "discarded"].Country)
     return {
-        "n_countries": len(set(df.Country)),
+        "n_countries_confirmed_or_suspected": len(countries_suspected_or_confirmed),
+        "n_countries_confirmed": len(countries_confirmed),
+        "n_countries_suspected_only": len(
+            countries_suspected - countries_suspected_or_confirmed
+        ),
+        "n_countries_discarded": len(countries_discarded),
         "n_confirmed": len(df[df.Status == "confirmed"]),
         "n_suspected": len(df[df.Status == "suspected"]),
         "n_confirmed_or_suspected": len(df[df.Status.isin(["confirmed", "suspected"])]),

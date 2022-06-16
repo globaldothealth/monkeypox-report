@@ -25,8 +25,13 @@
 
 <h2>Summary</h2>
 
-<p> The Monkeypox 2022 outbreak has to date been detected in {{ n_countries }}
-countries and caused at least {{ n_confirmed }} confirmed and {{ n_suspected }}
+<p>The Monkeypox 2022 outbreak has to date been detected in
+{{ n_countries_confirmed_or_suspected }}
+countries (either confirmed or suspected cases), with
+{{ n_countries_confirmed }} confirming transmission,
+{{ n_countries_suspected_only }} countries continuing to have suspected cases only,
+and {{ n_countries_discarded }} countries discarded cases that were suspected.
+Overall there are {{ n_confirmed }} confirmed and {{ n_suspected }}
 suspected cases (as of
 {{ date }}; <strong>Figure 1A</strong>). Since {{ yesterday }}, {{ n_diff_confirmed }}
 new confirmed cases have
