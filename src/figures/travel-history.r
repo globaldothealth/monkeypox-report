@@ -194,14 +194,14 @@ mpxv_map <- ggplot() +
   coord_fixed() +
   geom_map(data = world1, map = world1, aes(long, lat, map_id = region), color = "white", fill = "grey90", size = 0.1) +
   geom_map(data = subset(world1, !is.na(count_range)), map = subset(world1, !is.na(count_range)), aes(long, lat, map_id = region, fill = count_range), color = "white", size = 0.1) +
-  scale_fill_manual(values = cols, name = "  Cases") +
+  scale_fill_manual(values = cols, name = "Cases") +
   scale_color_manual(
     values = c("mediumseagreen", "#8c510a", "#d8b365", "antiquewhite3","tan", "grey70", "grey50", "grey20", "grey40"),
     na.value = "grey90", name = "  Travel History",
     labels = c("01 January 2050" = "Unknown Date")
     
      ) +
-  scale_size_area(breaks = c(1, 10), labels = c("1", "10"), name = "  Travel History Cases") +
+  scale_size_area(breaks = c(1, 10), labels = c("1", "10"), name = "Travel History Cases") +
   geom_point(
     data = world5,
     aes(
@@ -220,10 +220,11 @@ mpxv_map <- ggplot() +
     ),
     size = 0.3
   ) +
-  theme(legend.position = c(0.1, 0.4)) +
+  theme(legend.position = "bottom") +
   theme(legend.direction = "vertical") +
   theme(legend.title = element_text(size = 8)) +
-  guides(colour = guide_legend(override.aes = list(size = 3))) +
+  theme(legend.text = element_text(size = 7)) +
+  guides(colour = guide_legend(nrow = 4, override.aes = list(size = 3))) +
   scale_y_continuous(limits = c(-55, 90)) +
   scale_x_continuous(limits = c(-170, 170))
 
@@ -254,6 +255,6 @@ mpxv_cases_countries <- ggplot() +
   )
 
 p <- plot_grid(mpxv_map, mpxv_cases_countries,
-               ncol = 1, labels = c("A", "B"), rel_heights=c(3, 2))
+               ncol = 1, labels = c("A", "B"), rel_heights=c(4, 3))
 
 ggsave(plot = p, "build/figures/travel-history.png", width = 6, height = 9, limitsize = FALSE)
