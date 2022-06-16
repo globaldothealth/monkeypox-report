@@ -8,6 +8,7 @@ import subprocess
 from typing import Final, Any
 from pathlib import Path
 
+import yaml
 import chevron
 import pandas as pd
 import requests
@@ -237,10 +238,19 @@ def build(
     date: datetime.date,
     skip_fetch: bool = False,
     skip_figures: bool = False,
+    overrides_file: str = "overrides.yml"
 ):
     """Build Monkeypox epidemiological report for a particular date"""
     var = {}
+    with open(overrides_file) as fp:
+        overrides = yaml.safe_load(fp)
     date = date or today
+    if date in overrides:
+        overrides = overrides[date]
+        logging.info(f"Found overrides for {date} in {overrides_file}")
+        logging.info(yaml.dump(overrides))
+    else:
+        overrides = {}
     if not skip_fetch:
         logging.info("Fetch nextstrain data from S3")
         fetch_nextstrain(fetch_bucket, date)
@@ -249,6 +259,7 @@ def build(
     var.update(input_files(get_archives_list("csv")))
     if not skip_fetch:
         logging.info("Fetch yesterday, day before yesterday, and last week's files")
+        var.update(overrides)
         fetch_urls(
             [var["file"], var["previous_day_file"], var["last_week_file"]],
             ["yesterday.csv", "day_before_yesterday.csv", "last_week.csv"],
@@ -274,10 +285,12 @@ def build(
     with (BUILD_PATH / "index.json").open("w") as fp:
         json.dump(var, fp, indent=2, sort_keys=True)
     logging.info("Rendering index.html")
+
     render(Path(__file__).parent / "index.html", var, BUILD_PATH / "index.html")
 
     if not skip_figures:
         for figure in FIGURES:
+            logging.info(f"Generating figure {figure}")
             subprocess.run(["Rscript", f"src/figures/{figure}.r"])
 
 
@@ -291,6 +304,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--skip-figures", help="Skip figure generation", action="store_true"
     )
+    parser.add_argument(
+        "--overrides", help="Specify overrides file", default="overrides.yml"
+    )
     args = parser.parse_args()
     build(
         args.bucket,
@@ -299,4 +315,5 @@ if __name__ == "__main__":
         else datetime.datetime.today().date(),
         skip_fetch=args.skip_fetch,
         skip_figures=args.skip_figures,
+        overrides_file=args.overrides,
     )
