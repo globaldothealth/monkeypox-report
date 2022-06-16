@@ -31,6 +31,7 @@ age_bins <- function(age, count){
 }
 
 gh_data <- read.csv('src/data/yesterday.csv')
+gh_data[gh_data == "male "] <- "male"
 
 con_df <- gh_data %>%
   filter(Status=='confirmed') %>%
