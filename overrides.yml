@@ -1,0 +1,8 @@
+2022-06-16:
+  file: https://raw.githubusercontent.com/globaldothealth/monkeypox/main/archives/2022-06-16%2015%3A08%3A16.070280.csv
+  previous_day_file: https://raw.githubusercontent.com/globaldothealth/monkeypox/main/archives/2022-06-15%2009%3A03%3A38.341675.csv
+  reason: >
+    Bug in QC script that led to script not running for a day. The lack of
+    updates caused file not to be updated, and this resulted in no changes
+    observed. Bug was fixed in 19562faefd1155a691f3cf01e7500f5f3a84d110, so
+    picking the generated file after that as today's file.
