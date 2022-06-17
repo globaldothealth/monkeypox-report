@@ -8,6 +8,7 @@ pkgs.mkShell {
     python310Packages.boto3
     python310Packages.inflect
     python310Packages.chevron
+    python310Packages.pyyaml
 
     R
     rPackages.cowplot
