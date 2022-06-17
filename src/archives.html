@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Monkeypox 2022 global epidemiology report archives</title>
+    <meta name="description" content="Monkeypox 2022 outbreak briefing report archives from Global.health">
+ 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="/style.css">
+    <link rel="shortcut icon" type="image/x-icon" href="https://global.health/wp-content/uploads/2020/10/gs-favicon-green.png">
+    <link rel="apple-touch-icon" href="https://global.health/wp-content/uploads/2020/10/gs-favicon-green.png">
+  </head>
+<body>
+<main>
+<nav>
+    <img class="logo" src="https://global.health/wp-content/uploads/2020/07/gh-logo-full-black.png" alt="Global.health logo"></li>
+    <ul>
+        <li><a href="/">Current Report</a></li>
+        <li><a href="https://github.com/globaldothealth/monkeypox">GitHub</a></li>
+        <li><a href="https://map.monkeypox.global.health">Map</a></li>
+    </ul>
+</nav>
+<h1>Monkeypox 2022 global epidemiology report archives</h1>
+<p>From the <a href="https://global.health">Global.health</a> team (<a href="mailto:info@global.health">info@global.health</a>)
+
+<h2>Archives</h2>
+
+<ul id="archives">
+
+{{#archives}}
+<li><a href="/{{ date }}">{{ date }}</a>: {{ n_confirmed }} confirmed cases, {{ n_suspected }} suspected cases</li>
+{{/archives}}
+
+</ul>
+
+</main>
+</body>
+</html>
