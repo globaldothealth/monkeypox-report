@@ -18,7 +18,7 @@
   "n_countries_confirmed": 42,
   "n_countries_confirmed_or_suspected": 57,
   "n_countries_discarded": 21,
-  "n_countries_suspected_only": 0,
+  "n_countries_suspected_only": 11,
   "n_diff_confirmed": 271,
   "n_diff_countries": 5,
   "n_genomes": 79,
