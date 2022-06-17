@@ -95,9 +95,13 @@ def last_file_on_date(links: list[str], date: datetime.date) -> str:
 # and compares it to the last file from day before yesterday. This way,
 # only full days are compared
 def input_files(links: list[str]) -> dict[str, str]:
+    # No reporting on weekends, so shift today to Saturday so that we
+    # compare Thu -> Fri change for Monday report
+
+    shifted_today = today if today.isoweekday() != 1 else today - oneday - oneday
     return {
-        "file": last_file_on_date(links, today - oneday),
-        "previous_day_file": last_file_on_date(links, today - oneday - oneday),
+        "file": last_file_on_date(links, shifted_today - oneday),
+        "previous_day_file": last_file_on_date(links, shifted_today - oneday - oneday),
         "last_week_file": last_file_on_date(links, today - week),
     }
 
@@ -239,7 +243,7 @@ def build(
     date: datetime.date,
     skip_fetch: bool = False,
     skip_figures: bool = False,
-    overrides_file: str = "overrides.yml"
+    overrides_file: str = "overrides.yml",
 ):
     """Build Monkeypox epidemiological report for a particular date"""
     var = {}
