@@ -2,7 +2,7 @@ name: build
 
 on:
   schedule:
-    - cron: '6 6 * * *'
+    - cron: '6 6 * * MON-FRI'
   workflow_dispatch:
 
 jobs:
