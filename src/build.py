@@ -112,7 +112,7 @@ def get_compare_days(
     if weekday == 2:  # Tue, compares Fri -> Mon
         return today - oneday, today - 4 * oneday, today - week
     if weekday == 1:  # Mon, compares Thu -> Fri
-        return today - 2 * oneday, today - 3 * oneday, today - week
+        return today - 3 * oneday, today - 4 * oneday, today - week
 
 
 def input_files(links: list[str], today: datetime.date) -> dict[str, str]:
