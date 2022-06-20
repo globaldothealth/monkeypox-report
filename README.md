@@ -1,5 +1,10 @@
 # monkeypox-report
 
+[![build](https://github.com/globaldothealth/monkeypox-report/actions/workflows/build.yml/badge.svg)](https://github.com/globaldothealth/monkeypox-report/actions/workflows/build.yml)
+[![deploy](https://github.com/globaldothealth/monkeypox-report/actions/workflows/deploy.yml/badge.svg)](https://github.com/globaldothealth/monkeypox-report/actions/workflows/deploy.yml)
+[![nextstrain](https://github.com/globaldothealth/monkeypox-report/actions/workflows/nextstrain.yml/badge.svg)](https://github.com/globaldothealth/monkeypox-report/actions/workflows/nextstrain.yml)
+[![tests](https://github.com/globaldothealth/monkeypox-report/actions/workflows/tests.yml/badge.svg)](https://github.com/globaldothealth/monkeypox-report/actions/workflows/tests.yml)
+
 This repository contains code and templates to generate the briefing report at https://www.monkeypox.global.health
 
 ## Setup
