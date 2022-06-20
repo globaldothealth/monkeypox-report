@@ -260,7 +260,8 @@ def build(
         logging.info("Fetch nextstrain data from S3")
         fetch_nextstrain(fetch_bucket, date)
     var.update(read_nextstrain())
-    var.update({"date": today.isoformat(), "yesterday": (today - oneday).isoformat()})
+    yesterday = today - oneday if today.isoweekday() != 1 else today - 3 * oneday
+    var.update({"date": today.isoformat(), "yesterday": yesterday.isoformat()})
     var.update(input_files(get_archives_list("csv")))
     if not skip_fetch:
         logging.info("Fetch yesterday, day before yesterday, and last week's files")
