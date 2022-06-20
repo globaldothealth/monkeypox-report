@@ -5,7 +5,7 @@ import logging
 import argparse
 import datetime
 import subprocess
-from typing import Final, Any
+from typing import Final, Any, Tuple
 from pathlib import Path
 
 import yaml
@@ -91,18 +91,38 @@ def last_file_on_date(links: list[str], date: datetime.date) -> str:
         sys.exit(1)
 
 
-# build is run early morning UTC and looks at the last file the day before
-# and compares it to the last file from day before yesterday. This way,
-# only full days are compared
-def input_files(links: list[str]) -> dict[str, str]:
-    # No reporting on weekends, so shift today to Saturday so that we
-    # compare Thu -> Fri change for Monday report
+def get_compare_days(
+    today: datetime.date,
+) -> Tuple[datetime.date, datetime.date, datetime.date]:
+    """Get tuple of (yesterday, day before yesterday, last week) dates
+    to compare data.
 
-    shifted_today = today if today.isoweekday() != 1 else today - oneday - oneday
+    build is run early morning UTC and looks at the last file the day before
+    and compares it to the last file from day before yesterday. This way,
+    only full days are compared.
+
+    No reporting on weekends, so shift today to Saturday so that we
+    compare Thu -> Fri change for Monday report
+    """
+    weekday = today.isoweekday()
+    if weekday in [6, 7]:  # Sat, Sun
+        raise ValueError("Generating reports on weekend is not supported")
+    if weekday in [3, 4, 5]:  # Wed, Thu, Fri
+        return today - oneday, today - 2 * oneday, today - week
+    if weekday == 2:  # Tue, compares Fri -> Mon
+        return today - oneday, today - 4 * oneday, today - week
+    if weekday == 1:  # Mon, compares Thu -> Fri
+        return today - 2 * oneday, today - 3 * oneday, today - week
+
+
+def input_files(links: list[str], today: datetime.date) -> dict[str, str]:
+    """Get input files to compare for today"""
+
+    yesterday, day_before_yesterday, last_week = get_compare_days(today)
     return {
-        "file": last_file_on_date(links, shifted_today - oneday),
-        "previous_day_file": last_file_on_date(links, shifted_today - oneday - oneday),
-        "last_week_file": last_file_on_date(links, today - week),
+        "file": last_file_on_date(links, yesterday),
+        "previous_day_file": last_file_on_date(links, day_before_yesterday),
+        "last_week_file": last_file_on_date(links, last_week),
     }
 
 
@@ -260,8 +280,14 @@ def build(
         logging.info("Fetch nextstrain data from S3")
         fetch_nextstrain(fetch_bucket, date)
     var.update(read_nextstrain())
-    yesterday = today - oneday if today.isoweekday() != 1 else today - 3 * oneday
-    var.update({"date": today.isoformat(), "yesterday": yesterday.isoformat()})
+    yesterday, day_before_yesterday, _ = get_compare_days(date)
+    var.update(
+        {
+            "date": today.isoformat(),
+            "yesterday": yesterday.isoformat(),
+            "day_before_yesterday": day_before_yesterday.isoformat(),
+        }
+    )
     var.update(input_files(get_archives_list("csv")))
     if not skip_fetch:
         logging.info("Fetch yesterday, day before yesterday, and last week's files")
