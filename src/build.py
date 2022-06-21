@@ -288,7 +288,7 @@ def build(
             "day_before_yesterday": day_before_yesterday.isoformat(),
         }
     )
-    var.update(input_files(get_archives_list("csv")))
+    var.update(input_files(get_archives_list("csv"), date))
     if not skip_fetch:
         logging.info("Fetch yesterday, day before yesterday, and last week's files")
         var.update(overrides)
