@@ -24,8 +24,19 @@ jobs:
         aws s3 sync build/ s3://www.monkeypox.global.health/$(date +'%Y-%m-%d')/
         aws s3 sync build/ s3://www.monkeypox.global.health/
 
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    - name: Install poetry
+      run: curl -sSL https://install.python-poetry.org | python3 -
+    - name: Install dependencies
+      run: poetry install
+    - name: Create archives
+      run: poetry run python src/archives.py
+
     - name: Invalidate cache
       run: |
         aws cloudfront create-invalidation \
           --distribution-id EG7WS3LXZ4NO \
-          --paths / /index.html /index.json /style.css '/figures/*' "/$(date +'%Y-%m-%d')/*"
+          --paths / /index.html /archives/ /archives/index.html \
+          /index.json /style.css '/figures/*' "/$(date +'%Y-%m-%d')/*"
