@@ -2,7 +2,6 @@ import io
 import random
 import datetime
 import urllib.parse
-from pprint import pprint
 
 import pandas as pd
 import pytest
