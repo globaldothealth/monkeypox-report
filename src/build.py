@@ -223,15 +223,61 @@ def mid_bucket_age(age_interval: str) -> float:
         return None
 
 
+def age_bucket(age: int) -> int:
+    """Returns age bucket from
+
+    0 - 10, 11 - 20, 21 - 30, 31 - 40, 41 - 50,
+    51 - 60, 61 - 70, 71 - 80, 81 -
+    """
+    if age < 0:
+        raise ValueError(f"Invalid age {age}")
+    if age == 0:
+        return 0
+    # ages above 80 are in the same bucket
+    return min((age - 1) // 10, 8)
+
+
+def not_same_age_bucket(age: str) -> bool:
+    try:
+        start_age, end_age = list(map(lambda x: int(x.strip()), age.split("-")))
+    except ValueError:
+        return False
+    return age_bucket(start_age) != age_bucket(end_age)
+
+
 def demographics(df: pd.DataFrame) -> dict[str, int]:
     df["Age_mid"] = df.Age.map(mid_bucket_age)
     valid_age_df = df[~pd.isnull(df.Age_mid)]
+    confirmed = df[df.Status == "confirmed"]
+    valid_age_gender = confirmed[
+        (confirmed.Age != "<40")
+        & (~confirmed.Age.isna())
+        & (confirmed.Gender.isin(["male", "female"]))
+    ].reset_index(drop=True)
     return {
         "mean_age_confirmed_cases": int(
             valid_age_df[valid_age_df.Status == "confirmed"].Age_mid.mean()
         ),
         "percentage_male": int(
             100 * len(df[df.Gender == "male"]) / len(df[~pd.isnull(df.Gender)])
+        ),
+        "pc_valid_age_gender_in_confirmed": int(
+            round(
+                100
+                * sum(
+                    (~confirmed.Age.isna())
+                    & (~confirmed.Gender.isna())
+                    & (df.Age != "<40")
+                )
+                / len(confirmed)
+            )
+        ),
+        "pc_age_range_multiple_buckets": int(
+            round(
+                100
+                * valid_age_gender.Age.map(not_same_age_bucket).sum()
+                / len(valid_age_gender)
+            )
         ),
     }
 

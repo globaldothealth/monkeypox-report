@@ -18,12 +18,13 @@ TODAY = pd.read_csv(
         """Status,Country,Travel_history (Y/N/NA),Travel_history_location,Age,Gender
 confirmed,USA,Y,,,male
 suspected,USA,N,,20-40,male
-confirmed,USA,Y,London,30-40,male
-confirmed,England,Y,,20-30,female
-confirmed,England,N,,40-50,male
-suspected,England,Y,New York,50-60,male
+confirmed,USA,N,,25-45,male
+confirmed,USA,Y,London,31-40,male
+confirmed,England,Y,,21-30,female
+confirmed,England,N,,41-50,male
+suspected,England,Y,New York,51-60,male
 suspected,Belgium,N,,,male
-discarded,England,NA,,40-50,male
+discarded,England,NA,,41-50,male
 """
     )
 )
@@ -132,13 +133,13 @@ def test_get_compare_days(source, expected):
 def test_counts():
     assert build.counts(TODAY, YESTERDAY) == {
         "diff_countries": ["Belgium", "England"],
-        "n_confirmed": 4,
-        "n_confirmed_or_suspected": 7,
+        "n_confirmed": 5,
+        "n_confirmed_or_suspected": 8,
         "n_countries_confirmed": 2,
         "n_countries_confirmed_or_suspected": 3,
         "n_countries_discarded": 1,
         "n_countries_suspected_only": 1,
-        "n_diff_confirmed": 2,
+        "n_diff_confirmed": 3,
         "n_diff_countries": 2,
         "n_suspected": 3,
         "n_travel_history": 4,
@@ -156,8 +157,31 @@ def test_mid_bucket_age(source, expected):
     assert build.mid_bucket_age(source) == expected
 
 
+@pytest.mark.parametrize(
+    "source,expected", [(5, 0), (80, 7), (90, 8), (100, 8), (0, 0), (39, 3), (41, 4)]
+)
+def test_age_bucket(source, expected):
+    assert build.age_bucket(source) == expected
+
+
+@pytest.mark.parametrize(
+    "source,expected",
+    [
+        ("11 - 20", False),
+        ("9 - 20", True),
+        ("41 - 45", False),
+        ("20 - 40", True),
+        ("81 - 100", False),
+    ],
+)
+def test_not_same_age_bucket(source, expected):
+    assert build.not_same_age_bucket(source) == expected
+
+
 def test_demographics():
     assert build.demographics(TODAY) == {
         "mean_age_confirmed_cases": 35,
-        "percentage_male": 87,
+        "pc_age_range_multiple_buckets": 25,
+        "pc_valid_age_gender_in_confirmed": 80,
+        "percentage_male": 88,
     }
