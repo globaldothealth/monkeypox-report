@@ -50,7 +50,12 @@ def fetch_nextstrain(bucket: str, date: datetime.date):
 
 def read_nextstrain():
     df = pd.read_csv(DATA_PATH / NEXTSTRAIN_FILE, sep="\t")
-    df = df[(df.host == "Homo sapiens") & (df.outbreak_associated == "yes")]
+    df = df[df.host == "Homo sapiens"]
+    if "outbreak_associated" in df.columns:
+        df = df[df.outbreak_associated == "yes"]
+    else:
+        df = df[df.date >= "2022-05"]
+
     return {
         "n_genomes": len(df),
         "country_with_most_genomes": df.groupby("country")
