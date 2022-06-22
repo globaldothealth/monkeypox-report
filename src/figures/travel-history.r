@@ -196,7 +196,8 @@ mpxv_map <- ggplot() +
   geom_map(data = subset(world1, !is.na(count_range)), map = subset(world1, !is.na(count_range)), aes(long, lat, map_id = region, fill = count_range), color = "white", size = 0.1) +
   scale_fill_manual(values = cols, name = "Cases") +
   scale_color_manual(
-    values = c("mediumseagreen", "#8c510a", "#d8b365", "antiquewhite3","tan", "grey70", "grey50", "grey20", "grey40"),
+    values = c("mediumseagreen", "#8c510a", "#d8b365", "antiquewhite3","tan", "grey70",
+               "grey50", "grey20", "grey40", "grey50", "grey60", "grey70"),
     na.value = "grey90", name = "  Travel History",
     labels = c("01 January 2050" = "Unknown Date")
     
@@ -248,9 +249,9 @@ mpxv_cases_countries <- ggplot() +
   theme(legend.title = element_blank()) +
   theme(legend.background = element_blank()) +
   xlab("") +
-  ylab("Cummulative Cases") +
+  ylab("Cumulative Cases") +
   scale_y_continuous(
-    name = "Cummulative Cases",
+    name = "Cumulative Cases",
     sec.axis = sec_axis(~ . / 30, name = "Countries")
   )
 
