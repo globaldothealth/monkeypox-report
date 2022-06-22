@@ -23,13 +23,14 @@ def aggregate(gh_data_path: Path, nextstrain_path: Path) -> pd.DataFrame:
         country=genome_data.country.replace("USA", "United States")
     ).rename(columns={"country": "Country"})
 
-    # Out break associated genomes only
+    genome_data = genome_data[genome_data.host == "Homo sapiens"]
+    if "outbreak_associated" in genome_data.columns:
+        genome_data = genome_data[genome_data.outbreak_associated == "yes"]
+    else:
+        genome_data = genome_data[genome_data.date >= "2022-05"]
+
     genome_agg = (
-        genome_data[
-            (genome_data.outbreak_associated == "yes")
-            & (genome_data.host == "Homo sapiens")
-        ]
-        .reset_index(drop=True)
+        genome_data.reset_index(drop=True)
         .groupby("Country")
         .size()
         .reset_index(name="nextstrain_genome_count")
