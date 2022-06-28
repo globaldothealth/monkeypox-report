@@ -137,6 +137,7 @@ def test_counts():
         "n_countries_confirmed": 2,
         "n_countries_confirmed_or_suspected": 3,
         "n_countries_discarded": 1,
+        "n_countries_discarded_only": 0,
         "n_countries_suspected_only": 1,
         "n_diff_confirmed": 3,
         "n_diff_countries": 2,

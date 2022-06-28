@@ -167,6 +167,10 @@ def counts(df: pd.DataFrame, prev_df: pd.DataFrame) -> dict[str, int]:
     countries_suspected = set(df[df.Status == "suspected"].Country)
     countries_not_suspected = set(df[df.Status != "suspected"].Country)
     countries_discarded = set(df[df.Status == "discarded"].Country)
+    countries_discarded_only = set(df[df.Status == "discarded"].Country) - set(
+        df[df.Status != "discarded"].Country
+    )
+
     return {
         "n_countries_confirmed_or_suspected": len(countries_suspected_or_confirmed),
         "n_countries_confirmed": len(countries_confirmed),
@@ -174,6 +178,7 @@ def counts(df: pd.DataFrame, prev_df: pd.DataFrame) -> dict[str, int]:
             countries_suspected - countries_not_suspected
         ),
         "n_countries_discarded": len(countries_discarded),
+        "n_countries_discarded_only": len(countries_discarded_only),
         "n_confirmed": len(df[df.Status == "confirmed"]),
         "n_suspected": len(df[df.Status == "suspected"]),
         "n_confirmed_or_suspected": len(df[df.Status.isin(["confirmed", "suspected"])]),
