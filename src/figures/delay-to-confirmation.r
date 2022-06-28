@@ -49,8 +49,8 @@ delay_fig <- ggplot(gh_data_delay) +
   scale_fill_manual(values = full_col_vector) +
   geom_vline(xintercept=med, linetype="dashed", color="black") +
   geom_vline(xintercept=mean, linetype="dashed", color="grey50") +
-  annotate("text", x=med, y=hist_max+10, label=paste("Median Delay:", med), color="black", hjust = -0.11) +
-  annotate("text", x=mean, y=hist_max+5, label=paste("Mean Delay:", round(mean, digits=4)), color="grey50", hjust=-0.09) +
+  annotate("text", x=med, y=hist_max+14, label=paste("Median Delay:", med), color="black", hjust = -0.11) +
+  annotate("text", x=mean, y=hist_max+7, label=paste("Mean Delay:", round(mean, digits=4)), color="grey50", hjust=-0.09) +
   labs(x='Confirmation Delay (Days)', y='Count') +
   theme_classic() +
   annotate("text", x = med, y = hist_max, label = paste("Suspected \u2192 Confirmed:", nrow(gh_data_delay)), hjust=-0.05) +
