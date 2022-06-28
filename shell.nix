@@ -9,6 +9,7 @@ pkgs.mkShell {
     python310Packages.inflect
     python310Packages.chevron
     python310Packages.pyyaml
+    python310Packages.jupyter
 
     R
     rPackages.cowplot
@@ -19,6 +20,7 @@ pkgs.mkShell {
     rPackages.styler
     rPackages.rjson
     rPackages.RColorBrewer
+    rPackages.IRkernel
   ];
 
   shellHook = ''
