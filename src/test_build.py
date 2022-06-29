@@ -142,7 +142,7 @@ def test_counts():
         "n_diff_confirmed": 3,
         "n_diff_countries": 2,
         "n_suspected": 3,
-        "n_travel_history": 4,
+        "n_travel_history": 3,
         "n_unknown_travel_history": 2,
         "text_diff_countries": ", and 2 new countries have been added to the list "
         "(Belgium, England)",
@@ -183,5 +183,5 @@ def test_demographics():
         "mean_age_confirmed_cases": 35,
         "pc_age_range_multiple_buckets": 25,
         "pc_valid_age_gender_in_confirmed": 80,
-        "percentage_male": 88,
+        "percentage_male": 80,
     }
