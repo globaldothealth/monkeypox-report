@@ -6,3 +6,8 @@
     updates caused file not to be updated, and this resulted in no changes
     observed. Bug was fixed in 19562faefd1155a691f3cf01e7500f5f3a84d110, so
     picking the generated file after that as today's file.
+2022-06-30:
+  info: >
+    Prior to this report, number of travel history cases and percentage
+    male calculation incorrectly used all cases, instead of only confirmed.
+    Archived reports will be updated soon.
