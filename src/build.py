@@ -160,9 +160,13 @@ def counts(df: pd.DataFrame, prev_df: pd.DataFrame) -> dict[str, int]:
     df: Today's data file as a dataframe
     prev_df: Previous day's data file as a dataframe
     """
+    df = df[df.Status != "omit_error"]
+    prev_df = prev_df[prev_df.Status != "omit_error"]
+
     countries_suspected_or_confirmed = set(
         df[df.Status.isin(["confirmed", "suspected"])].Country
     )
+    confirmed = df[df.Status == "confirmed"]
     countries_confirmed = set(df[df.Status == "confirmed"].Country)
     countries_suspected = set(df[df.Status == "suspected"].Country)
     countries_not_suspected = set(df[df.Status != "suspected"].Country)
@@ -182,11 +186,11 @@ def counts(df: pd.DataFrame, prev_df: pd.DataFrame) -> dict[str, int]:
         "n_confirmed": len(df[df.Status == "confirmed"]),
         "n_suspected": len(df[df.Status == "suspected"]),
         "n_confirmed_or_suspected": len(df[df.Status.isin(["confirmed", "suspected"])]),
-        "n_travel_history": len(df[df["Travel_history (Y/N/NA)"] == "Y"]),
+        "n_travel_history": len(confirmed[confirmed["Travel_history (Y/N/NA)"] == "Y"]),
         "n_unknown_travel_history": len(
-            df[
-                (df["Travel_history (Y/N/NA)"] == "Y")
-                & pd.isnull(df.Travel_history_location)
+            confirmed[
+                (confirmed["Travel_history (Y/N/NA)"] == "Y")
+                & pd.isnull(confirmed.Travel_history_location)
             ]
         ),
         "n_diff_confirmed": (
@@ -255,30 +259,22 @@ def not_same_age_bucket(age: str) -> bool:
 
 
 def demographics(df: pd.DataFrame) -> dict[str, int]:
+    df = df[df.Status == "confirmed"]
     df["Age_mid"] = df.Age.map(mid_bucket_age)
     valid_age_df = df[~pd.isnull(df.Age_mid)]
-    confirmed = df[df.Status == "confirmed"]
-    valid_age_gender = confirmed[
-        (confirmed.Age != "<40")
-        & (~confirmed.Age.isna())
-        & (confirmed.Gender.isin(["male", "female"]))
+    valid_age_gender = df[
+        (df.Age != "<40") & (~df.Age.isna()) & (df.Gender.isin(["male", "female"]))
     ].reset_index(drop=True)
     return {
-        "mean_age_confirmed_cases": int(
-            valid_age_df[valid_age_df.Status == "confirmed"].Age_mid.mean()
-        ),
+        "mean_age_confirmed_cases": int(valid_age_df.Age_mid.mean()),
         "percentage_male": int(
             100 * len(df[df.Gender == "male"]) / len(df[~pd.isnull(df.Gender)])
         ),
         "pc_valid_age_gender_in_confirmed": int(
             round(
                 100
-                * sum(
-                    (~confirmed.Age.isna())
-                    & (~confirmed.Gender.isna())
-                    & (df.Age != "<40")
-                )
-                / len(confirmed)
+                * sum((~df.Age.isna()) & (~df.Gender.isna()) & (df.Age != "<40"))
+                / len(df)
             )
         ),
         "pc_age_range_multiple_buckets": int(
@@ -294,6 +290,7 @@ def demographics(df: pd.DataFrame) -> dict[str, int]:
 def delay_suspected_to_confirmed(df: pd.DataFrame) -> dict[str, Any]:
     """Returns mean and median delay from a case going from suspected to confirmed"""
 
+    df = df[df.Status == "confirmed"]
     delay_df = df[df.Date_entry < df.Date_confirmation].assign(
         Date_entry=pd.to_datetime(df.Date_entry),
         Date_confirmation=pd.to_datetime(df.Date_confirmation),
