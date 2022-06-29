@@ -10,6 +10,13 @@ nav ul li {
   padding: 10px;
 }
 
+div.info {
+  color: white;
+  padding: 2px 20px;
+  background: #007aec;
+  border-radius: 5px;
+}
+
 nav ul a {
   color: #444;
   padding: 10px;

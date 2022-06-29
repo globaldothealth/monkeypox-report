@@ -362,6 +362,7 @@ def build(
     var.update(travel_history(df))
     var.update(demographics(df))
     var.update(delay_suspected_to_confirmed(df))
+    var.update(overrides)
 
     # remove these for now
     del var["text_travel_history"]
