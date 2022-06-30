@@ -1,10 +1,12 @@
 import io
+import json
 import random
 import datetime
 import urllib.parse
 
 import pandas as pd
 import pytest
+import requests
 
 import build
 
@@ -101,7 +103,15 @@ def github_archive_api(data_repo: str):
 GITHUB_ARCHIVE_API = github_archive_api(DATA_REPO)
 
 
-def test_get_archives_list():
+@pytest.fixture
+def successful_request(monkeypatch):
+    response = requests.Response()
+    monkeypatch.setattr(response, "json", lambda: GITHUB_ARCHIVE_API)
+    monkeypatch.setattr(response, "status_code", 200)
+    monkeypatch.setattr(requests, "get", lambda _: response)
+
+
+def test_get_archives_list(successful_request):
     assert all(url.endswith("csv") for url in build.get_archives_list("csv"))
 
 
