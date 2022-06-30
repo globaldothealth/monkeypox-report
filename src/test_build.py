@@ -26,6 +26,7 @@ confirmed,England,N,,41-50,male
 suspected,England,Y,New York,51-60,male
 suspected,Belgium,N,,,male
 discarded,England,NA,,41-50,male
+omit_error,Australia,Y,,30-40,male
 """
     )
 )
@@ -157,6 +158,69 @@ def test_last_file_on_date_failure():
 )
 def test_get_compare_days(source, expected):
     assert build.get_compare_days(source) == expected
+
+
+def test_percentage_occurrence():
+    assert build.percentage_occurrence(TODAY, TODAY.Status == "confirmed") == 50  # 5/10
+
+
+@pytest.mark.parametrize(
+    "kwargs,expected",
+    [
+        ({"status": "confirmed"}, {"USA", "England"}),
+        ({"status": "suspected"}, {"USA", "England", "Belgium"}),
+        ({"status": "suspected", "only": True}, {"Belgium"}),
+    ],
+)
+def test_countries(kwargs, expected):
+    assert build.countries(TODAY, **kwargs) == expected
+
+
+@pytest.mark.parametrize(
+    "kwargs,expected",
+    [
+        ({"status": "confirmed"}, 2),
+        ({"status": "suspected"}, 3),
+        ({"status": "suspected", "only": True}, 1),
+    ],
+)
+def test_n_countries(kwargs, expected):
+    assert build.n_countries(TODAY, **kwargs) == expected
+
+
+@pytest.mark.parametrize(
+    "status,expected",
+    [
+        ("confirmed", 5),
+        ("suspected", 3),
+        ("discarded", 1),
+        (["confirmed", "suspected"], 8),
+    ],
+)
+def test_n_cases(status, expected):
+    assert build.n_cases(TODAY, status) == expected
+
+
+def test_travel_history_counts():
+    assert build.travel_history_counts(TODAY) == {
+        "n_travel_history": 3,
+        "n_unknown_travel_history": 2,
+    }
+
+
+@pytest.mark.parametrize(
+    "countries,expected",
+    [
+        (set(), ""),
+        ({"Belgium"}, ", and 1 new country has been added to the list (Belgium)"),
+        (
+            {"Belgium", "Australia"},
+            ", and 2 new countries have been added to the list (Australia, Belgium)",
+        ),
+    ],
+)
+def test_text_diff_countries(countries, expected):
+    assert build.text_diff_countries(countries) == expected
 
 
 def test_counts():
