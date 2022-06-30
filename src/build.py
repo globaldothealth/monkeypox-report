@@ -361,7 +361,7 @@ def build(
     yesterday, day_before_yesterday, _ = get_compare_days(date)
     var.update(
         {
-            "date": today.isoformat(),
+            "date": date.isoformat(),
             "yesterday": yesterday.isoformat(),
             "day_before_yesterday": day_before_yesterday.isoformat(),
         }
