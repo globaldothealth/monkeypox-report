@@ -111,8 +111,20 @@ def successful_request(monkeypatch):
     monkeypatch.setattr(requests, "get", lambda _: response)
 
 
+@pytest.fixture
+def failed_request(monkeypatch):
+    response = requests.Response()
+    monkeypatch.setattr(response, "status_code", 404)
+    monkeypatch.setattr(requests, "get", lambda _: response)
+
+
 def test_get_archives_list(successful_request):
     assert all(url.endswith("csv") for url in build.get_archives_list("csv"))
+
+
+def test_get_archives_list_raises_exception(failed_request):
+    with pytest.raises(ConnectionError, match="Failed to get archives list, aborting"):
+        build.get_archives_list("csv")
 
 
 def test_last_file_on_date():
@@ -125,6 +137,14 @@ def test_last_file_on_date():
         build.last_file_on_date(links, date(2022, 6, 20))
         == "https://raw.githubusercontent.com/globaldothealth/monkeypox/main/archives/2022-06-20%2018%3A00%3A00.csv"
     )
+
+
+def test_last_file_on_date_failure():
+    today = datetime.datetime.today()
+    yesterday = today - datetime.timedelta(days=1)
+    links = [f"http://foo.bar/{yesterday}.csv"]
+    with pytest.raises(ValueError):
+        build.last_file_on_date(links, today)
 
 
 @pytest.mark.parametrize(
