@@ -181,7 +181,7 @@ def test_counts():
 
 @pytest.mark.parametrize(
     "source,expected",
-    [(40, 40), ("40", None), ("20-30", 25), ("20-40", 30), ("0-5", 2.5)],
+    [(40, 40), ("40", 40), ("20-30", 25), ("20-40", 30), ("0-5", 2.5)],
 )
 def test_mid_bucket_age(source, expected):
     assert build.mid_bucket_age(source) == expected

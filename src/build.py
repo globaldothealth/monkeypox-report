@@ -222,11 +222,10 @@ def travel_history(df: pd.DataFrame) -> dict[str, str]:
 
 
 def mid_bucket_age(age_interval: str) -> float:
-    if not isinstance(age_interval, str):  # should be corrected in QC, accept here
-        try:
-            return float(age_interval)
-        except ValueError:
-            return None
+    try:  # if age_interval is a number, return that
+        return float(age_interval)
+    except ValueError:
+        pass
     try:
         start, end = list(map(float, age_interval.split("-")))
         return (start + end) / 2
