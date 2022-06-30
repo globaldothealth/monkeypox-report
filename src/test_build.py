@@ -200,6 +200,7 @@ def test_age_bucket_failure():
     with pytest.raises(ValueError):
         build.age_bucket(121)
 
+
 @pytest.mark.parametrize(
     "source,expected",
     [
@@ -212,6 +213,11 @@ def test_age_bucket_failure():
 )
 def test_not_same_age_bucket(source, expected):
     assert build.not_same_age_bucket(source) == expected
+
+
+def test_not_same_age_bucket_failure():
+    with pytest.raises(ValueError, match=r"Invalid age.*"):
+        build.not_same_age_bucket("85-121")
 
 
 def test_demographics():
