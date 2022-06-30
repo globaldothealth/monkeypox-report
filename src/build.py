@@ -76,8 +76,7 @@ def fetch_urls(urls: list[str], corresponding_filenames: list[str]):
 def get_archives_list(suffix: str = "") -> list[str]:
     contents_url = f"https://api.github.com/repos/{DATA_REPO}/contents/archives"
     if (res := requests.get(contents_url)).status_code != 200:
-        logging.error("Failed to get archives list, aborting")
-        sys.exit(1)
+        raise ConnectionError("Failed to get archives list, aborting")
     return [
         item["download_url"]
         for item in res.json()
@@ -92,7 +91,7 @@ def last_file_on_date(links: list[str], date: datetime.date) -> str:
         )
     except ValueError:
         logging.error(f"No link found on {date}")
-        sys.exit(1)
+        raise
 
 
 def get_compare_days(
@@ -340,7 +339,16 @@ def build(
             "day_before_yesterday": day_before_yesterday.isoformat(),
         }
     )
-    var.update(input_files(get_archives_list("csv"), date))
+
+    try:
+        var.update(input_files(get_archives_list("csv"), date))
+    except ValueError as e:
+        logging.error(e)
+        sys.exit(1)
+    except ConnectionError as e:
+        logging.error(e)
+        sys.exit(1)
+
     if not skip_fetch:
         logging.info("Fetch yesterday, day before yesterday, and last week's files")
         var.update(overrides)
