@@ -240,7 +240,7 @@ def age_bucket(age: int) -> int:
     0 - 10, 11 - 20, 21 - 30, 31 - 40, 41 - 50,
     51 - 60, 61 - 70, 71 - 80, 81 -
     """
-    if age < 0:
+    if age < 0 or age > 120:
         raise ValueError(f"Invalid age {age}")
     if age == 0:
         return 0
