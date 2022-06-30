@@ -153,59 +153,90 @@ def table_confirmed_cases(df, prev_week_df: pd.DataFrame) -> dict[str, str]:
     }
 
 
+def n_cases(df: pd.DataFrame, status: str | list[str]) -> int:
+    """Returns number of cases for a given status"""
+
+    df = df[df.Status != "omit_error"]
+    statuses = [status] if isinstance(status, str) else status
+    return len(df[df.Status.isin(statuses)])
+
+
+def countries(
+    df: pd.DataFrame, status: str | list[str], only: bool = False
+) -> set[str]:
+    """Returns set of countries for a given status
+
+    only: Whether to return number of countries only having that status(es)
+    """
+    df = df[df.Status != "omit_error"]
+    statuses = [status] if isinstance(status, str) else status
+    if not only:
+        return set(df[df.Status.isin(statuses)].Country)
+    else:
+        return set(df[df.Status.isin(statuses)].Country) - set(
+            df[~df.Status.isin(statuses)].Country
+        )
+
+
+def n_countries(df: pd.DataFrame, status: str | list[str], only: bool = False) -> int:
+    """Returns number of countries for a given status
+
+    only: Whether to return number of countries only having that status(es)
+    """
+
+    return len(countries(df, status, only))
+
+
+def travel_history_counts(df: pd.DataFrame) -> dict[str, int]:
+    df = df[df.Status == "confirmed"]
+    return {
+        "n_travel_history": len(df[df["Travel_history (Y/N/NA)"] == "Y"]),
+        "n_unknown_travel_history": len(
+            df[
+                (df["Travel_history (Y/N/NA)"] == "Y")
+                & pd.isnull(df.Travel_history_location)
+            ]
+        ),
+    }
+
+
+def text_diff_countries(countries: set) -> str:
+    """Returns text about new countries"""
+    if countries:
+        return (
+            f", and {len(countries)} new {readable.plural_noun('country', len(countries))} "
+            f"{readable.plural_verb('has', len(countries))} been added to the list ({', '.join(sorted(countries))})"
+        )
+    else:
+        return ""
+
+
 def counts(df: pd.DataFrame, prev_df: pd.DataFrame) -> dict[str, int]:
     """Return count variables from data
 
     df: Today's data file as a dataframe
     prev_df: Previous day's data file as a dataframe
     """
-    df = df[df.Status != "omit_error"]
-    prev_df = prev_df[prev_df.Status != "omit_error"]
-
-    countries_suspected_or_confirmed = set(
-        df[df.Status.isin(["confirmed", "suspected"])].Country
+    new_countries = sorted(
+        countries(df, ["confirmed", "suspected"])
+        - countries(prev_df, ["confirmed", "suspected"])
     )
-    confirmed = df[df.Status == "confirmed"]
-    countries_confirmed = set(df[df.Status == "confirmed"].Country)
-    countries_suspected = set(df[df.Status == "suspected"].Country)
-    countries_not_suspected = set(df[df.Status != "suspected"].Country)
-    countries_discarded = set(df[df.Status == "discarded"].Country)
-    countries_discarded_only = set(df[df.Status == "discarded"].Country) - set(
-        df[df.Status != "discarded"].Country
-    )
-
     return {
-        "n_countries_confirmed_or_suspected": len(countries_suspected_or_confirmed),
-        "n_countries_confirmed": len(countries_confirmed),
-        "n_countries_suspected_only": len(
-            countries_suspected - countries_not_suspected
+        "n_countries_confirmed_or_suspected": n_countries(
+            df, ["confirmed", "suspected"]
         ),
-        "n_countries_discarded": len(countries_discarded),
-        "n_countries_discarded_only": len(countries_discarded_only),
-        "n_confirmed": len(df[df.Status == "confirmed"]),
-        "n_suspected": len(df[df.Status == "suspected"]),
-        "n_confirmed_or_suspected": len(df[df.Status.isin(["confirmed", "suspected"])]),
-        "n_travel_history": len(confirmed[confirmed["Travel_history (Y/N/NA)"] == "Y"]),
-        "n_unknown_travel_history": len(
-            confirmed[
-                (confirmed["Travel_history (Y/N/NA)"] == "Y")
-                & pd.isnull(confirmed.Travel_history_location)
-            ]
-        ),
-        "n_diff_confirmed": (
-            len(df[df.Status == "confirmed"])
-            - len(prev_df[prev_df.Status == "confirmed"])
-        ),
-        "diff_countries": (
-            diff_countries := sorted(set(df.Country) - set(prev_df.Country))
-        ),
-        "n_diff_countries": len(diff_countries),
-        "text_diff_countries": (
-            f", and {len(diff_countries)} new {readable.plural_noun('country', len(diff_countries))} "
-            f"{readable.plural_verb('has', len(diff_countries))} been added to the list ({', '.join(diff_countries)})"
-        )
-        if diff_countries
-        else "",
+        "n_countries_confirmed": n_countries(df, "confirmed"),
+        "n_countries_suspected_only": n_countries(df, "suspected", only=True),
+        "n_countries_discarded": n_countries(df, "discarded"),
+        "n_countries_discarded_only": n_countries(df, "discarded", only=True),
+        "n_confirmed": n_cases(df, "confirmed"),
+        "n_suspected": n_cases(df, "suspected"),
+        "n_confirmed_or_suspected": n_cases(df, ["confirmed", "suspected"]),
+        "n_diff_confirmed": n_cases(df, "confirmed") - n_cases(prev_df, "confirmed"),
+        "diff_countries": new_countries,
+        "n_diff_countries": len(new_countries),
+        "text_diff_countries": text_diff_countries(new_countries),
+        **travel_history_counts(df),
     }
 
 
@@ -256,6 +287,11 @@ def not_same_age_bucket(age: str) -> bool:
     return age_bucket(start_age) != age_bucket(end_age)
 
 
+def percentage_occurrence(df: pd.DataFrame, filter_series: pd.Series) -> int:
+    """Returns percentage occurrence of filter_series within a dataframe"""
+    return int(round(100 * sum(filter_series) / len(df)))
+
+
 def demographics(df: pd.DataFrame) -> dict[str, int]:
     df = df[df.Status == "confirmed"]
     df["Age_mid"] = df.Age.map(mid_bucket_age)
@@ -265,22 +301,14 @@ def demographics(df: pd.DataFrame) -> dict[str, int]:
     ].reset_index(drop=True)
     return {
         "mean_age_confirmed_cases": int(valid_age_df.Age_mid.mean()),
-        "percentage_male": int(
-            100 * len(df[df.Gender == "male"]) / len(df[~pd.isnull(df.Gender)])
+        "percentage_male": percentage_occurrence(
+            df[~pd.isnull(df.Gender)], df.Gender == "male"
         ),
-        "pc_valid_age_gender_in_confirmed": int(
-            round(
-                100
-                * sum((~df.Age.isna()) & (~df.Gender.isna()) & (df.Age != "<40"))
-                / len(df)
-            )
+        "pc_valid_age_gender_in_confirmed": percentage_occurrence(
+            df, (~df.Age.isna()) & (~df.Gender.isna()) & (df.Age != "<40")
         ),
-        "pc_age_range_multiple_buckets": int(
-            round(
-                100
-                * valid_age_gender.Age.map(not_same_age_bucket).sum()
-                / len(valid_age_gender)
-            )
+        "pc_age_range_multiple_buckets": percentage_occurrence(
+            valid_age_gender, valid_age_gender.Age.map(not_same_age_bucket)
         ),
     }
 
