@@ -194,6 +194,12 @@ def test_age_bucket(source, expected):
     assert build.age_bucket(source) == expected
 
 
+def test_age_bucket_failure():
+    with pytest.raises(ValueError):
+        build.age_bucket(-1)
+    with pytest.raises(ValueError):
+        build.age_bucket(121)
+
 @pytest.mark.parametrize(
     "source,expected",
     [
