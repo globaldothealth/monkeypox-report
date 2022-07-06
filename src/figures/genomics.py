@@ -36,8 +36,10 @@ def aggregate(gh_data_path: Path, nextstrain_path: Path) -> pd.DataFrame:
         .reset_index(name="nextstrain_genome_count")
     )
 
-    # confirmed Gh cases only
-    con_cases = gh_data[gh_data.Status == "confirmed"].reset_index(drop=True)
+    # confirmed Gh cases only, non-endemic (N)
+    con_cases = gh_data[
+        (gh_data.Status == "confirmed") & (gh_data.ID.str.startswith("N"))
+    ].reset_index(drop=True)
     con_cases["Country"] = con_cases.Country.replace(
         ["England", "Scotland", "Wales", "Northern Ireland"], "United Kingdom"
     )

@@ -14,31 +14,69 @@ HEX = list(map(str, range(10))) + ["a", "b", "c", "d", "e", "f"]
 SHA = "9c9dce36ed84fd2c3fde112249fe17450f885ab4"
 DATA_REPO = "globaldothealth/monkeypox"
 
-TODAY = pd.read_csv(
-    io.StringIO(
-        """Status,Country,Travel_history (Y/N/NA),Travel_history_location,Age,Gender
-confirmed,USA,Y,,,male
-suspected,USA,N,,20-40,male
-confirmed,USA,N,,25-45,male
-confirmed,USA,Y,London,31-40,male
-confirmed,England,Y,,21-30,female
-confirmed,England,N,,41-50,male
-suspected,England,Y,New York,51-60,male
-suspected,Belgium,N,,,male
-discarded,England,NA,,41-50,male
-omit_error,Australia,Y,,30-40,male
+
+def dataframe(csv_data: str) -> pd.DataFrame:
+    "Returns dataframe from CSV data"
+    return pd.read_csv(io.StringIO(csv_data))
+
+
+TODAY = dataframe(
+    """ID,Status,Country,Travel_history (Y/N/NA),Travel_history_location,Age,Gender
+N1,confirmed,USA,Y,,,male
+N2,suspected,USA,N,,20-40,male
+N3,confirmed,USA,N,,25-45,male
+N4,confirmed,USA,Y,London,31-40,male
+N5,confirmed,England,Y,,21-30,female
+N6,confirmed,England,N,,41-50,male
+N7,suspected,England,Y,New York,51-60,male
+N8,suspected,Belgium,N,,,male
+N9,discarded,England,NA,,41-50,male
+N10,omit_error,Australia,Y,,30-40,male
 """
-    )
 )
 
-YESTERDAY = pd.read_csv(
-    io.StringIO(
-        """Status,Country,Travel_history (Y/N/NA),Travel_history_location,Age,Gender
-confirmed,USA,Y,,,male
-suspected,USA,N,,20-40,male
-confirmed,USA,Y,London,30-40,male
+YESTERDAY = dataframe(
+    """ID,Status,Country,Travel_history (Y/N/NA),Travel_history_location,Age,Gender
+N1,confirmed,USA,Y,,,male
+N2,suspected,USA,N,,20-40,male
+N3,confirmed,USA,Y,London,30-40,male
 """
-    )
+)
+
+STATUS_ID_INTEGER = dataframe(
+    """Status,ID
+confirmed,1
+confirmed,2
+suspected,3
+omit_error,4
+"""
+)
+
+STATUS_ID_ALPHANUMERIC = dataframe(
+    """Status,ID
+confirmed,N1
+confirmed,N2
+suspected,N3
+omit_error,N4
+confirmed,E1
+suspected,E2
+"""
+)
+
+STATUS_ID_INTEGER_filtered = dataframe(
+    """Status,ID
+confirmed,1
+confirmed,2
+suspected,3
+"""
+)
+
+STATUS_ID_ALPHANUMERIC_filtered = dataframe(
+    """Status,ID
+confirmed,N1
+confirmed,N2
+suspected,N3
+"""
 )
 
 
@@ -102,6 +140,17 @@ def github_archive_api(data_repo: str):
 
 
 GITHUB_ARCHIVE_API = github_archive_api(DATA_REPO)
+
+
+@pytest.mark.parametrize(
+    "data,filtered_data",
+    [
+        (STATUS_ID_INTEGER, STATUS_ID_INTEGER_filtered),
+        (STATUS_ID_ALPHANUMERIC, STATUS_ID_ALPHANUMERIC_filtered),
+    ],
+)
+def test_initial_filter(data, filtered_data):
+    assert build.initial_filter(data).equals(filtered_data)
 
 
 @pytest.fixture
