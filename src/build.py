@@ -129,8 +129,19 @@ def input_files(links: list[str], today: datetime.date) -> dict[str, str]:
     }
 
 
+def initial_filter(df: pd.DataFrame) -> pd.DataFrame:
+    """Initial filtering applied to all data"""
+    if df.ID.map(str).map(str.isdigit).all():  # older non-endemic list
+        return df[df.Status != "omit_error"]
+    else:
+        return df[(df.Status != "omit_error") & df.ID.str.startswith("N")]
+
+
 def table_confirmed_cases(df, prev_week_df: pd.DataFrame) -> dict[str, str]:
     """Returns variables to populate Table 1: Confirmed cases by country"""
+    df = initial_filter(df)
+    prev_week_df = initial_filter(prev_week_df)
+
     yesterday_counts = (
         df[df.Status == "confirmed"].groupby("Country").count()[["Status"]]
     )
@@ -156,7 +167,7 @@ def table_confirmed_cases(df, prev_week_df: pd.DataFrame) -> dict[str, str]:
 def n_cases(df: pd.DataFrame, status: str | list[str]) -> int:
     """Returns number of cases for a given status"""
 
-    df = df[df.Status != "omit_error"]
+    df = initial_filter(df)
     statuses = [status] if isinstance(status, str) else status
     return len(df[df.Status.isin(statuses)])
 
@@ -168,7 +179,7 @@ def countries(
 
     only: Whether to return number of countries only having that status(es)
     """
-    df = df[df.Status != "omit_error"]
+    df = initial_filter(df)
     statuses = [status] if isinstance(status, str) else status
     if not only:
         return set(df[df.Status.isin(statuses)].Country)
@@ -188,6 +199,7 @@ def n_countries(df: pd.DataFrame, status: str | list[str], only: bool = False) -
 
 
 def travel_history_counts(df: pd.DataFrame) -> dict[str, int]:
+    df = initial_filter(df)
     df = df[df.Status == "confirmed"]
     return {
         "n_travel_history": len(df[df["Travel_history (Y/N/NA)"] == "Y"]),
@@ -241,6 +253,7 @@ def counts(df: pd.DataFrame, prev_df: pd.DataFrame) -> dict[str, int]:
 
 
 def travel_history(df: pd.DataFrame) -> dict[str, str]:
+    df = initial_filter(df)
     df_travel = df[df["Travel_history (Y/N/NA)"] == "Y"]
     travel_counts_by_country = [
         (country, len(group)) for country, group in df_travel.groupby("Country")
@@ -293,6 +306,7 @@ def percentage_occurrence(df: pd.DataFrame, filter_series: pd.Series) -> int:
 
 
 def demographics(df: pd.DataFrame) -> dict[str, int]:
+    df = initial_filter(df)
     df = df[df.Status == "confirmed"]
     df["Age_mid"] = df.Age.map(mid_bucket_age)
     valid_age_df = df[~pd.isnull(df.Age_mid)]
@@ -316,6 +330,7 @@ def demographics(df: pd.DataFrame) -> dict[str, int]:
 def delay_suspected_to_confirmed(df: pd.DataFrame) -> dict[str, Any]:
     """Returns mean and median delay from a case going from suspected to confirmed"""
 
+    df = initial_filter(df)
     df = df[df.Status == "confirmed"]
     delay_df = df[df.Date_entry < df.Date_confirmation].assign(
         Date_entry=pd.to_datetime(df.Date_entry),
