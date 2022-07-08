@@ -197,7 +197,8 @@ mpxv_map <- ggplot() +
   scale_fill_manual(values = cols, name = "Cases") +
   scale_color_manual(
     values = c("mediumseagreen", "#8c510a", "#d8b365", "antiquewhite3","tan", "grey70",
-               "grey50", "grey20", "grey40", "grey50", "grey60", "grey70"),
+               "grey50", "grey10", "grey20", "grey30", "grey40", "grey50",
+               "grey60", "grey75", "grey80", "grey85"),
     na.value = "grey90", name = "  Travel History",
     labels = c("01 January 2050" = "Unknown Date")
     
