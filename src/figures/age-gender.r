@@ -12,7 +12,8 @@ age_bins <- function(age, count){
             list(c(41,50)),
             list(c(51,60)),
             list(c(61,70)),
-            list(c(71, 80)))
+            list(c(71, 80)),
+            list(c(81, 120)))
   split_age = str_split_fixed(age, "-", 2)
   start_age = as.integer(split_age[1])
   end_age = as.integer(split_age[2])
