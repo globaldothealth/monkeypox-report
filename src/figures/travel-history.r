@@ -36,12 +36,11 @@ country2long <- function(x) {
   return(as.numeric(country_data[["LON"]]))
 }
 
-
-
-
 MPXV_cases_data <- read.csv("src/data/yesterday.csv")
 MPXV_cases_data <- subset(MPXV_cases_data, Status != "discarded")
-
+MPXV_cases_data <- MPXV_cases_data %>%
+  dplyr::select("ID", "Status", "Country", "Date_confirmation", "Travel_history_country",
+                "Travel_history_location", "Travel_history_entry")
 
 MPXV_cases_data_0<-subset(subset(MPXV_cases_data,Travel_history_country==''),Travel_history_location!='')#Artifically coding unknown country of travel to the bigger location"
 MPXV_cases_data_0$Travel_history_country<-MPXV_cases_data_0$Travel_history_location #Artifically coding unknown country of travel to the bigger location"
@@ -70,29 +69,23 @@ MPXV_cases_data$Travel_history_country[MPXV_cases_data$Travel_history_country ==
 MPXV_cases_data_1 <- subset(MPXV_cases_data, Travel_history_entry == "early May") # Artificially coding "early May to 5th of May
 MPXV_cases_data_1$Travel_history_entry <- "2022-05-05" # Artificially coding "early May to 5th of May
 
-
 MPXV_cases_data_2 <- subset(subset(MPXV_cases_data, Travel_history_country!=''), Travel_history_entry=='')
- MPXV_cases_data_2$Travel_history_entry<-"2050-01-01"  #Artificially coding missing dates to a random formatted date to act as "unknown date"
+MPXV_cases_data_2$Travel_history_entry<-"2050-01-01"  #Artificially coding missing dates to a random formatted date to act as "unknown date"
 #MPXV_cases_data_2a <- subset(subset(MPXV_cases_data, Travel_history_country!=''), is.na(Travel_history_entry==''))
 # MPXV_cases_data_2a$Travel_history_entry<-"2050-01-01"  #Artificially coding missing dates to a random formatted date to act as "unknown date"
 
 remove <- MPXV_cases_data_1$ID
 MPXV_cases_data <- MPXV_cases_data[!MPXV_cases_data$ID %in% remove, ]
 
-
 remove <- MPXV_cases_data_2$ID
 MPXV_cases_data <- MPXV_cases_data[!MPXV_cases_data$ID %in% remove, ]
-
 
 MPXV_cases_data$Travel_history_entry <- as.Date(MPXV_cases_data$Travel_history_entry)
 
 MPXV_cases_data <- rbind(MPXV_cases_data, MPXV_cases_data_1,MPXV_cases_data_2)
 
-
 MPXV_cases_data$Country_lat <- lapply(MPXV_cases_data$Country, country2lat)
 MPXV_cases_data$Country_long <- lapply(MPXV_cases_data$Country, country2long)
-
-
 
 MPXV_cases_data$Travel_history_country_lat <- lapply(MPXV_cases_data$Travel_history_country, country2lat)
 MPXV_cases_data$Travel_history_country_long <- lapply(MPXV_cases_data$Travel_history_country, country2long)
@@ -105,12 +98,10 @@ MPXV_cases_data$date1 <- as.Date(cut(MPXV_cases_data$date, breaks = "1 weeks", s
 MPXV_cases_data$date2 <- as.Date(cut(MPXV_cases_data$date, breaks = "2 weeks", start.on.monday = FALSE))
 MPXV_cases_data$date3 <- as.Date(cut(MPXV_cases_data$date, breaks = "1 month", start.on.monday = FALSE))
 
-
 df_count <- MPXV_cases_data %>% count(Country)
 names(df_count)[names(df_count) == "Country"] <- "Country"
 names(df_count)[names(df_count) == "n"] <- "Count"
-df_count
-
+#df_count
 
 df_count <- df_count %>%
   left_join(MPXV_cases_data, by = c("Country" = "Country"))
@@ -129,8 +120,7 @@ names(df_count2)[names(df_count2) == "Travel_history_country"] <- "Travel_histor
 names(df_count2)[names(df_count2) == "n"] <- "Travel_Count"
 
 df_count2 <- subset(df_count2, !is.na(Travel_history_country))
-df_count2
-
+#df_count2
 
 df_count2 <- df_count2 %>%
   left_join(MPXV_cases_data_travel, by = c("Travel_history_country" = "Travel_history_country"))
@@ -140,27 +130,20 @@ df_count2$Travel_history_country[df_count2$Travel_history_country == "United Kin
 
 df_count2$Travel_history_country[df_count2$Travel_history_country == "United States"] <- "USA"
 df_count2$Travel_history_country[df_count2$Travel_history_country == "United States"] <- "USA"
-
-
-
-
-
+# map data
 world1 <- map_data("world")
-
-
 
 df_count2<-df_count2 %>% dplyr::select('Travel_history_country_lat','Travel_history_country_long','Travel_history_country',"Travel_Count")
 
-world5<- world1 %>% 
+world5 <- world1 %>%
+  filter(region %in% unique(df_count2$Travel_history_location)) %>%
   left_join(df_count2, by = c("region" = "Travel_history_country"))
-
 
 world1<- world1 %>% 
   left_join(df_count, by = c("region" = "Country"))
 
-
-
-world4<- subset(subset(subset(world1,!is.na(Travel_history_country)),Travel_history_country!='Western Europe'), !is.na(Travel_history_entry))
+world4 <- world1 %>%
+  filter(!is.na(Travel_history_country) & Travel_history_country!='Western Europe' & !is.na(Travel_history_entry))
 
 world4<-subset(world4,Travel_history_country_lat!='numeric(0)')
 world4$Travel_history_country_lat <- unlist(world4$Travel_history_country_lat)
@@ -179,6 +162,11 @@ world4$date3_travel <- as.Date(cut(world4$date_travel, breaks = "1 month", start
 world4 <- world4[!world4$ID %in% remove_from_travel_links, ]
 
 world1$count_range <- cut(as.numeric(world1$Count), breaks = c(0, 10, 50, 100, Inf), right = TRUE, labels = c("<10", "10-50", "50-100", ">100"))
+world1_slim <- world1 %>%
+  select('lat', 'long', 'region', 'group', 'order')
+world1_sub <- world1 %>%
+  select('lat', 'long', 'region', 'group', 'order', 'count_range') %>%
+  filter(!is.na(count_range))
 
 
 world5 <- world5 %>% dplyr::select("Travel_history_country_lat", "Travel_history_country_long", "region", "Travel_Count")
@@ -192,17 +180,17 @@ cols <- c("#9ECAE1", "#3182BD", "#FC9272", "#DE2D26")
 mpxv_map <- ggplot() +
   theme_void() +
   coord_fixed() +
-  geom_map(data = world1, map = world1, aes(long, lat, map_id = region), color = "white", fill = "grey90", size = 0.1) +
-  geom_map(data = subset(world1, !is.na(count_range)), map = subset(world1, !is.na(count_range)), aes(long, lat, map_id = region, fill = count_range), color = "white", size = 0.1) +
+  geom_map(data = world1_slim, map=world1_slim, aes(map_id = region), color = "white", fill = "grey90", size = 0.1) +
+  geom_map(data = world1_sub, map=world1_sub, aes(map_id = region, fill = count_range), color = "white", size = 0.1) +
   scale_fill_manual(values = cols, name = "Cases") +
   scale_color_manual(
     values = c("mediumseagreen", "#8c510a", "#d8b365", "antiquewhite3","tan", "grey70",
                "grey50", "grey10", "grey20", "grey30", "grey40", "grey50",
-               "grey60", "grey75", "grey80", "grey85"),
+               "grey60", "grey75", "grey80", "grey85", "grey87", "grey89", "grey92", "grey95"),
     na.value = "grey90", name = "  Travel History",
     labels = c("01 January 2050" = "Unknown Date")
     
-     ) +
+  ) +
   scale_size_area(breaks = c(1, 10), labels = c("1", "10"), name = "Travel History Cases") +
   geom_point(
     data = world5,
@@ -229,6 +217,7 @@ mpxv_map <- ggplot() +
   guides(colour = guide_legend(nrow = 4, override.aes = list(size = 3))) +
   scale_y_continuous(limits = c(-55, 90)) +
   scale_x_continuous(limits = c(-170, 170))
+
 
 df_count <- subset(MPXV_cases_data, !is.na(days)) %>%
   dplyr::select("days", "Country") %>%
@@ -260,3 +249,4 @@ p <- plot_grid(mpxv_map, mpxv_cases_countries,
                ncol = 1, labels = c("A", "B"), rel_heights=c(4, 3))
 
 ggsave(plot = p, "build/figures/travel-history.png", width = 6, height = 9, limitsize = FALSE)
+
