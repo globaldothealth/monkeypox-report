@@ -37,7 +37,7 @@ country2long <- function(x) {
 }
 
 MPXV_cases_data <- read.csv("src/data/yesterday.csv")
-MPXV_cases_data <- subset(MPXV_cases_data, Status != "discarded")
+MPXV_cases_data <- subset(MPXV_cases_data, Status == "confirmed")
 MPXV_cases_data <- MPXV_cases_data %>%
   dplyr::select("ID", "Status", "Country", "Date_confirmation", "Travel_history_country",
                 "Travel_history_location", "Travel_history_entry")
