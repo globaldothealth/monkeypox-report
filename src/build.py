@@ -4,6 +4,7 @@ import logging
 import argparse
 import datetime
 import subprocess
+import contextlib
 from typing import Final, Any, Tuple
 from pathlib import Path
 
@@ -122,12 +123,14 @@ def input_files(links: list[str], today: datetime.date) -> dict[str, str]:
     """Get input files to compare for today"""
 
     yesterday, day_before_yesterday, last_week = get_compare_days(today)
-    return {
-        "file": last_file_on_date(links, yesterday),
-        "previous_day_file": last_file_on_date(links, day_before_yesterday),
-        "last_week_file": last_file_on_date(links, last_week),
-    }
-
+    out = {}
+    with contextlib.suppress(ValueError):
+        out["file"] = last_file_on_date(links, yesterday)
+    with contextlib.suppress(ValueError):
+        out["previous_day_file"] = last_file_on_date(links, day_before_yesterday)
+    with contextlib.suppress(ValueError):
+        out["last_week_file"] = last_file_on_date(links, last_week)
+    return out
 
 def initial_filter(df: pd.DataFrame) -> pd.DataFrame:
     """Initial filtering applied to all data"""
