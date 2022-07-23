@@ -79,6 +79,30 @@ def counts(data: pd.DataFrame) -> pd.DataFrame:
     )
 
 
+def cumulative_countries(df: pd.DataFrame) -> pd.DataFrame:
+    return (
+        df[df.Status == "confirmed"]
+        .sort_values("Date_confirmation")
+        .drop_duplicates("Country_ISO3")
+        .groupby("Date_confirmation")
+        .size()
+        .cumsum()
+        .reset_index()
+        .rename({0: "Cumulative_countries"}, axis=1)
+    )
+
+
+def cumulative_counts(df: pd.DataFrame) -> pd.DataFrame:
+    return (
+        df[df.Status == "confirmed"]
+        .groupby("Date_confirmation")
+        .size()
+        .cumsum()
+        .reset_index()
+        .rename({0: "Cumulative_cases"}, axis=1)
+    )
+
+
 def singleton_list(x):
     return [x]
 
