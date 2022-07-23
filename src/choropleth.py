@@ -5,6 +5,8 @@ from typing import Optional
 import pycountry
 import pandas as pd
 import geopandas as gpd
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 import logging
 
@@ -184,6 +186,35 @@ def figure(df: pd.DataFrame):
         selector=dict(type="choropleth"),
     )
 
+    fig.show()
+
+
+def figure_counts(data: pd.DataFrame):
+    cca = cumulative_counts(data)
+    cco = cumulative_countries(data)
+
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+    fig.add_trace(
+        go.Scatter(x=cca.Date_confirmation, y=cca.Cumulative_cases, name="Cases"),
+        secondary_y=False,
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=cco.Date_confirmation,
+            y=cco.Cumulative_countries,
+            name="Countries",
+            mode="lines+markers",
+        ),
+        secondary_y=True,
+    )
+
+    fig.update_xaxes(title_text="Confirmation date")
+
+    fig.update_yaxes(title_text="Cumulative cases", secondary_y=False)
+    fig.update_yaxes(title_text="Countries", secondary_y=True, range=(0, 250))
+    fig.update_layout(plot_bgcolor="white")
     fig.show()
 
 
