@@ -17,6 +17,17 @@ alpha_3 = {
     for country in pycountry.countries
 }
 
+BINS = [-1, 0, 9, 100, 500, 2000, 5000]
+COLORS = [
+    "rgb(216, 232, 236)",  # NoData
+    "rgb(136, 208, 235)",  # <10
+    "rgb(100, 198, 240)",  # 10-100
+    "rgb(41, 177, 234)",  # 101-500
+    "rgb(0, 147, 228)",  # 501-2000
+    "rgb(0, 116, 171)",  # 2001-5000
+    "rgb(34, 88, 147)",  # >5000
+]
+
 COUNTRY_QUIRKS = {
     "england": "GBR",
     "scotland": "GBR",
@@ -57,6 +68,23 @@ centroids = _centroids()
 centroids.loc["SGP"] = 1.28992, 103.85097
 centroids.loc["UAE"] = 23.991, 53.987
 centroids_dict = centroids.to_dict()
+
+
+def interval_str(interval: pd.Interval) -> str:
+    left = int(interval.left)
+    right = int(interval.right)
+    if left + 1 == right and interval.closed == "right":
+        return str(right)
+    if interval.closed == "right":
+        left += 1
+    elif interval.closed == "left":
+        right -= 1
+    elif interval.closed == "neither":
+        left += 1
+        right -= 1
+    else:
+        pass
+    return f"{left} - {right}"
 
 
 def get_iso_alpha_3(country: str) -> Optional[str]:
@@ -144,17 +172,20 @@ def travel_history(data: pd.DataFrame) -> pd.DataFrame:
 
 
 def figure(df: pd.DataFrame):
-    fig = go.Figure(
-        data=go.Choropleth(
-            locations=df.Country_ISO3,
-            z=df.Count,
-            text=df.Country,
-            colorscale="Blues",
-            autocolorscale=False,
-            marker_line_color="darkgray",
-            marker_line_width=0.5,
-        )
+    binned_counts = (
+        pd.cut(df.Count, bins=BINS).map(interval_str).replace({"0": "0 or no data"})
     )
+    fig = px.choropleth(
+        df,
+        locations="Country_ISO3",
+        color=binned_counts,
+        hover_name="Country",
+        hover_data=dict(Country_ISO3=False, Count=True),
+        category_orders=dict(color=binned_counts.cat.categories),
+        color_discrete_sequence=COLORS,
+        labels=dict(color="Cases"),
+    )
+
     fig.update_layout(
         title_text="Confirmed monkeypox cases",
         geo=dict(
@@ -174,18 +205,8 @@ def figure(df: pd.DataFrame):
             )
         )
     fig.update_traces(
-        hovertemplate="%{text}<br>%{z}<extra></extra>", selector=dict(type="choropleth")
-    )
-    fig.update_traces(
         showlegend=False, hovertemplate="\b\b", selector=dict(type="scattergeo")
     )
-    fig.update_traces(
-        colorbar_orientation="h",
-        colorbar_y=-0.1,
-        colorbar_thickness=15,
-        selector=dict(type="choropleth"),
-    )
-
     fig.show()
 
 
