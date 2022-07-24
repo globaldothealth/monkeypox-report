@@ -6,6 +6,7 @@ import pycountry
 import pandas as pd
 import geopandas as gpd
 import plotly.graph_objects as go
+import plotly.express as px
 from plotly.subplots import make_subplots
 
 import logging
@@ -171,7 +172,9 @@ def travel_history(data: pd.DataFrame) -> pd.DataFrame:
     return th
 
 
-def figure(df: pd.DataFrame):
+def figure(data: pd.DataFrame):
+    df = counts(data)
+    th = travel_history(data)
     binned_counts = (
         pd.cut(df.Count, bins=BINS).map(interval_str).replace({"0": "0 or no data"})
     )
@@ -187,7 +190,7 @@ def figure(df: pd.DataFrame):
     )
 
     fig.update_layout(
-        title_text="Confirmed monkeypox cases",
+        title_text="<b>A</b>. Confirmed monkeypox cases",
         geo=dict(
             showframe=False, showcoastlines=False, projection_type="equirectangular"
         ),
@@ -195,8 +198,8 @@ def figure(df: pd.DataFrame):
     for row in th.itertuples():
         fig.add_trace(
             go.Scattergeo(
-                lon=choropleth.travel_history_coords(row.Index, "longitude"),
-                lat=choropleth.travel_history_coords(row.Index, "latitude"),
+                lon=travel_history_coords(row.Index, "longitude"),
+                lat=travel_history_coords(row.Index, "latitude"),
                 name=" ➔ ".join(reversed(row.Travel_route))
                 + "<br>"
                 + "<br>".join(row.list),
@@ -207,7 +210,7 @@ def figure(df: pd.DataFrame):
     fig.update_traces(
         showlegend=False, hovertemplate="\b\b", selector=dict(type="scattergeo")
     )
-    fig.show()
+    return fig
 
 
 def figure_counts(data: pd.DataFrame):
@@ -235,8 +238,8 @@ def figure_counts(data: pd.DataFrame):
 
     fig.update_yaxes(title_text="Cumulative cases", secondary_y=False)
     fig.update_yaxes(title_text="Countries", secondary_y=True, range=(0, 250))
-    fig.update_layout(plot_bgcolor="white")
-    fig.show()
+    fig.update_layout(plot_bgcolor="white", title_text="<b>B</b>")
+    return fig
 
 
 def travel_history_coords(countries: list[str], key: str) -> list[float]:

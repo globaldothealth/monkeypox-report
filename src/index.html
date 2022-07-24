@@ -10,6 +10,7 @@
  	<link rel="stylesheet" href="style.css">
     <link rel="shortcut icon" type="image/x-icon" href="https://global.health/wp-content/uploads/2020/10/gs-favicon-green.png">
     <link rel="apple-touch-icon" href="https://global.health/wp-content/uploads/2020/10/gs-favicon-green.png">
+    <script src="https://cdn.plot.ly/plotly-2.12.1.min.js"></script>
   </head>
 <body>
 <main>
@@ -49,17 +50,19 @@ been reported{{ text_diff_countries }} (<strong>Figure 1B</strong>).</p>
 <p class="print">Turn over for figure →</p>
 
 <figure class="mainfigure">
-    <img src="figures/travel-history.png" alt="graph: Travel history and confirmed cases">
+    {{{ embed_choropleth }}}
+
+    {{{ embed_counts }}}
+
 <figcaption>
-<strong>Figure 1</strong>: <strong>A</strong>) Number of confirmed cases since
-May 7 2022 per country. Lines show reported travel history between countries
-and colour indicates the date of travel. <strong>B</strong>) Number of
+<strong>Figure 1</strong>: <strong>A</strong>) Number of confirmed cases per country.
+Lines show reported travel history between countries. <strong>B</strong>) Number of
 cumulative confirmed cases and number of countries who have reported confirmed
-cases. <a href="/{{ date }}/figures/travel-history.png">Link to figure</a>
+cases.
 </figcaption>
 </figure>
 
-{{{ table_confirmed_cases }}}
+{{{ embed_table_confirmed_cases }}}
 
 <p><strong>Table 1</strong>: Number of confirmed cases by country (highest
     to lowest) and percentage change since last week.</p>

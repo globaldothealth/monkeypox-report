@@ -13,7 +13,9 @@ import pandas as pd
 import requests
 import inflect  # plurals, counts etc.
 import boto3
+import plotly.io
 
+import choropleth
 import figures.genomics as genomics
 
 readable: Final = inflect.engine()
@@ -29,7 +31,6 @@ NEXTSTRAIN_FILE: Final = "nextstrain_monkeypox_hmpxv1_metadata.tsv"
 DIFFERENCE_LAST_WEEK_COLUMN: Final = "% difference in cases compared to last week"
 
 FIGURES: Final = [
-    "travel-history",
     "delay-to-confirmation",
     "genomics",
     "age-gender",
@@ -157,7 +158,7 @@ def table_confirmed_cases(df, prev_week_df: pd.DataFrame) -> dict[str, str]:
         100 * (table.Confirmed - table.Confirmed_last_week) / table.Confirmed_last_week
     ).astype(int)
     return {
-        "table_confirmed_cases": table[["Confirmed", DIFFERENCE_LAST_WEEK_COLUMN]]
+        "embed_table_confirmed_cases": table[["Confirmed", DIFFERENCE_LAST_WEEK_COLUMN]]
         .reset_index()
         .sort_values("Confirmed", ascending=False)
         .to_html(index=False)
@@ -351,6 +352,10 @@ def render(template: Path, variables: dict[str, Any], output: Path):
         output.write_text(chevron.render(f, variables))
 
 
+def render_figure(fig, key: str) -> str:
+    return {key: plotly.io.to_html(fig, include_plotlyjs=False, full_html=False)}
+
+
 def build(
     fetch_bucket: str,
     date: datetime.date,
@@ -413,15 +418,23 @@ def build(
     var.update(demographics(df))
     var.update(delay_suspected_to_confirmed(df))
     var.update(overrides)
+    var.update(render_figure(choropleth.figure(df), "embed_choropleth"))
+    var.update(render_figure(choropleth.figure_counts(df), "embed_counts"))
 
     # remove these for now
     del var["text_travel_history"]
-    logging.info("Writing variables to index.json")
-    with (BUILD_PATH / "index.json").open("w") as fp:
-        json.dump(var, fp, indent=2, sort_keys=True)
     logging.info("Rendering index.html")
 
     render(Path(__file__).parent / "index.html", var, BUILD_PATH / "index.html")
+
+    logging.info("Writing variables to index.json")
+    with (BUILD_PATH / "index.json").open("w") as fp:
+        json.dump(
+            {k: v for k, v in var.items() if not k.startswith("embed_")},
+            fp,
+            indent=2,
+            sort_keys=True,
+        )
 
     if not skip_figures:
         for figure in FIGURES:
