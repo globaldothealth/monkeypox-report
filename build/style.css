@@ -26,9 +26,18 @@ nav ul a:hover {
   background-color: #e0e0e0;
 }
 
-figure img {
+figure img, figure div {
   display: block;
   margin: auto;
+}
+
+figure.mainfigure {
+  width: 110%;
+  margin-left: -35px;
+}
+
+figure.mainfigure figcaption {
+  margin-left: 35px;
 }
 
 img.logo {
