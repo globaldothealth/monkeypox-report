@@ -18,6 +18,8 @@ alpha_3 = {
     for country in pycountry.countries
 }
 
+TRAVEL_HISTORY_LINEWIDTH = 0.9
+
 BINS = [-1, 0, 9, 100, 500, 2000, 5000]
 COLORS = [
     "rgb(216, 232, 236)",  # NoData
@@ -209,7 +211,7 @@ def figure(data: pd.DataFrame):
                 + "<br>"
                 + "<br>".join(row.list),
                 mode="lines",
-                line=dict(width=0.7, color="#505050"),
+                line=dict(width=TRAVEL_HISTORY_LINEWIDTH, color="#505050"),
             )
         )
     fig.update_traces(
