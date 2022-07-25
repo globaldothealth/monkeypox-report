@@ -50,12 +50,15 @@ def fetch_nextstrain(bucket: str, date: datetime.date):
 
 def read_nextstrain():
     df = pd.read_csv(DATA_PATH / NEXTSTRAIN_FILE, sep="\t")
-    df = df[df.host == "Homo sapiens"]
-    if "outbreak_associated" in df.columns:
-        df = df[df.outbreak_associated == "yes"]
-    else:
-        df = df[df.date >= "2022-05"]
+    # B.1 is the 2022 outbreak, but include two A.2 sequences in 2022
+    return df[
+        df.clade_membership.isin(["B.1", "A.2"])
+        & (df.date > "2022")
+        & (df.host == "Homo sapiens")
+    ]
 
+
+def counts_nextstrain(df: pd.DataFrame) -> dict[str, Any]:
     return {
         "n_genomes": len(df),
         "country_with_most_genomes": df.groupby("country")
@@ -374,7 +377,8 @@ def build(
     if not skip_fetch:
         logging.info("Fetch nextstrain data from S3")
         fetch_nextstrain(fetch_bucket, date)
-    var.update(read_nextstrain())
+    genome_data = read_nextstrain()
+    var.update(counts_nextstrain(genome_data))
     yesterday, day_before_yesterday, _ = get_compare_days(date)
     var.update(
         {
@@ -400,14 +404,15 @@ def build(
             [var["file"], var["previous_day_file"], var["last_week_file"]],
             ["yesterday.csv", "day_before_yesterday.csv", "last_week.csv"],
         )
-    genomics.aggregate(DATA_PATH / "yesterday.csv", DATA_PATH / NEXTSTRAIN_FILE).to_csv(
+    df = pd.read_csv(DATA_PATH / "yesterday.csv")
+    prev_df = pd.read_csv(DATA_PATH / "day_before_yesterday.csv")
+    last_week_df = pd.read_csv(DATA_PATH / "last_week.csv")
+
+    genomics.aggregate(df, genome_data).to_csv(
         DATA_PATH / "genomics.csv",
         header=True,
         index=False,
     )
-    df = pd.read_csv(DATA_PATH / "yesterday.csv")
-    prev_df = pd.read_csv(DATA_PATH / "day_before_yesterday.csv")
-    last_week_df = pd.read_csv(DATA_PATH / "last_week.csv")
 
     var.update(counts(df, prev_df))
     var.update(table_confirmed_cases(df, last_week_df))

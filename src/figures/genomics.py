@@ -13,21 +13,11 @@ from pathlib import Path
 import pandas as pd
 
 
-def aggregate(gh_data_path: Path, nextstrain_path: Path) -> pd.DataFrame:
-
-    gh_data = pd.read_csv(gh_data_path)
-    genome_data = pd.read_csv(nextstrain_path, sep="\t")
-    # Change some names so we can merge dataframes after aggregation
+def aggregate(gh_data: pd.DataFrame, genome_data: pd.DataFrame) -> pd.DataFrame:
 
     genome_data = genome_data.assign(
         country=genome_data.country.replace("USA", "United States")
     ).rename(columns={"country": "Country"})
-
-    genome_data = genome_data[genome_data.host == "Homo sapiens"]
-    if "outbreak_associated" in genome_data.columns:
-        genome_data = genome_data[genome_data.outbreak_associated == "yes"]
-    else:
-        genome_data = genome_data[genome_data.date >= "2022-05"]
 
     genome_agg = (
         genome_data.reset_index(drop=True)
