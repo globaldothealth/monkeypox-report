@@ -132,10 +132,7 @@ def input_files(links: list[str], today: datetime.date) -> dict[str, str]:
 
 def initial_filter(df: pd.DataFrame) -> pd.DataFrame:
     """Initial filtering applied to all data"""
-    if df.ID.map(str).map(str.isdigit).all():  # older non-endemic list
-        return df[df.Status != "omit_error"]
-    else:
-        return df[(df.Status != "omit_error") & df.ID.str.startswith("N")]
+    return df[df.Status != "omit_error"].reset_index(drop=True)
 
 
 def table_confirmed_cases(df, prev_week_df: pd.DataFrame) -> dict[str, str]:
