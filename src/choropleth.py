@@ -165,8 +165,8 @@ def travel_history(data: pd.DataFrame) -> pd.DataFrame:
     th = (
         data.assign(
             Travel_route_ISO3=(
-                data.Travel_history_country_ISO3.map(list) +
-                data.Country_ISO3.map(singleton_list)
+                data.Travel_history_country_ISO3.map(list)
+                + data.Country_ISO3.map(singleton_list)
             ).map(tuple)
         )
         .groupby("Travel_route_ISO3")
@@ -195,6 +195,7 @@ def figure(data: pd.DataFrame):
     )
 
     fig.update_layout(
+        font_family="Inter",
         title_text="<b>A</b>. Confirmed monkeypox cases",
         legend_orientation="h",
         margin={"r": 0, "t": 30, "l": 0, "b": 0},
@@ -207,15 +208,13 @@ def figure(data: pd.DataFrame):
             go.Scattergeo(
                 lon=travel_history_coords(row.Index, "longitude"),
                 lat=travel_history_coords(row.Index, "latitude"),
-                name=" ➔ ".join(row.Travel_route)
-                + "<br>"
-                + "<br>".join(row.list),
+                name=" ➔ ".join(row.Travel_route) + "<br>" + "<br>".join(row.list),
                 mode="lines",
                 line=dict(width=TRAVEL_HISTORY_LINEWIDTH, color="#505050"),
             )
         )
     fig.update_traces(
-        showlegend=False, hovertemplate="\b\b", selector=dict(type="scattergeo")
+        showlegend=False, hovertemplate=" ", selector=dict(type="scattergeo")
     )
     return fig
 
@@ -245,7 +244,7 @@ def figure_counts(data: pd.DataFrame):
 
     fig.update_yaxes(title_text="Cumulative cases", secondary_y=False)
     fig.update_yaxes(title_text="Countries", secondary_y=True, range=(0, 250))
-    fig.update_layout(plot_bgcolor="white", title_text="<b>B</b>")
+    fig.update_layout(plot_bgcolor="white", title_text="<b>B</b>", font_family="Inter")
     return fig
 
 
