@@ -332,11 +332,11 @@ def delay_suspected_to_confirmed(df: pd.DataFrame) -> dict[str, Any]:
     """Returns mean and median delay from a case going from suspected to confirmed"""
 
     df = initial_filter(df)
-    df = df[df.Status == "confirmed"]
-    delay_df = df[df.Date_entry < df.Date_confirmation].assign(
+    df = df[df.Status == "confirmed"].assign(
         Date_entry=pd.to_datetime(df.Date_entry),
-        Date_confirmation=pd.to_datetime(df.Date_confirmation),
+        Date_confirmation=pd.to_datetime(df.Date_confirmation)
     )
+    delay_df = df[df.Date_entry < df.Date_confirmation]
     delay_df["Delay"] = delay_df.Date_confirmation - delay_df.Date_entry
     return {
         "mean_delay_suspected_confirmed": round(
