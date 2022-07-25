@@ -76,6 +76,8 @@ STATUS_ID_ALPHANUMERIC_filtered = dataframe(
 confirmed,N1
 confirmed,N2
 suspected,N3
+confirmed,E1
+suspected,E2
 """
 )
 
@@ -150,7 +152,8 @@ GITHUB_ARCHIVE_API = github_archive_api(DATA_REPO)
     ],
 )
 def test_initial_filter(data, filtered_data):
-    assert build.initial_filter(data).equals(filtered_data)
+    actual_filtered_data = build.initial_filter(data)
+    assert actual_filtered_data.equals(filtered_data)
 
 
 @pytest.fixture
