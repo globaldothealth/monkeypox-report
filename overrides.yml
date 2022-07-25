@@ -11,3 +11,9 @@
     Prior to this report, number of travel history cases and percentage
     male calculation incorrectly used all cases, instead of only confirmed.
     Archived reports will be updated soon.
+2022-07-25:
+  info: >
+    Reporting now includes all cases, including from endemic countries.
+    Choropleth and case count graph are now interactive. Genomic data
+    is filtered using clade membership instead of filtering by
+    genomes after May 2022.
