@@ -195,6 +195,7 @@ def figure(data: pd.DataFrame):
     fig.update_layout(
         title_text="<b>A</b>. Confirmed monkeypox cases",
         legend_orientation="h",
+        margin={"r": 0, "t": 30, "l": 0, "b": 0},
         geo=dict(
             showframe=False, showcoastlines=False, projection_type="equirectangular"
         ),
