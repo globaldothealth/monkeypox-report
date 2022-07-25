@@ -163,8 +163,8 @@ def travel_history(data: pd.DataFrame) -> pd.DataFrame:
     th = (
         data.assign(
             Travel_route_ISO3=(
+                data.Travel_history_country_ISO3.map(list) +
                 data.Country_ISO3.map(singleton_list)
-                + data.Travel_history_country_ISO3.map(list)
             ).map(tuple)
         )
         .groupby("Travel_route_ISO3")
@@ -204,7 +204,7 @@ def figure(data: pd.DataFrame):
             go.Scattergeo(
                 lon=travel_history_coords(row.Index, "longitude"),
                 lat=travel_history_coords(row.Index, "latitude"),
-                name=" ➔ ".join(reversed(row.Travel_route))
+                name=" ➔ ".join(row.Travel_route)
                 + "<br>"
                 + "<br>".join(row.list),
                 mode="lines",
