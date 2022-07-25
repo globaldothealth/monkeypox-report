@@ -113,6 +113,7 @@ def counts(data: pd.DataFrame) -> pd.DataFrame:
 def cumulative_countries(df: pd.DataFrame) -> pd.DataFrame:
     return (
         df[df.Status == "confirmed"]
+        .assign(Date_confirmation=pd.to_datetime(df.Date_confirmation))
         .sort_values("Date_confirmation")
         .drop_duplicates("Country_ISO3")
         .groupby("Date_confirmation")
@@ -126,6 +127,8 @@ def cumulative_countries(df: pd.DataFrame) -> pd.DataFrame:
 def cumulative_counts(df: pd.DataFrame) -> pd.DataFrame:
     return (
         df[df.Status == "confirmed"]
+        .assign(Date_confirmation=pd.to_datetime(df.Date_confirmation))
+        .sort_values("Date_confirmation")
         .groupby("Date_confirmation")
         .size()
         .cumsum()
