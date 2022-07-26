@@ -173,7 +173,7 @@ def travel_history(data: pd.DataFrame) -> pd.DataFrame:
         .Travel_history_entry.agg([list, len])
     )
     th = th.assign(list=th.list.map(lambda xs: [x for x in xs if isinstance(x, str)]))
-    th = th.assign(Travel_route=th.index.map(lambda xs: [alpha_3.get(x) for x in xs]))
+    th = th.assign(Travel_route=th.index.map(lambda xs: list(filter(None, [alpha_3.get(x) for x in xs]))))
     return th
 
 
@@ -251,5 +251,5 @@ def figure_counts(data: pd.DataFrame):
 def travel_history_coords(countries: list[str], key: str) -> list[float]:
     MAX = {"latitude": 90, "longitude": 180}
     return [
-        min(centroids_dict[key][c] + 2 * random.random(), MAX[key]) for c in countries
+        min(centroids_dict[key][c] + 2 * random.random(), MAX[key]) for c in countries if c is not None
     ]
